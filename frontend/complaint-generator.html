@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formal Complaint Generator — FixRoute</title>
+  <meta name="description" content="Generate a formal, polite, and factual legal grievance letter for Indian grievance officers, ombudsmen, and consumer disputes.">
+  <link rel="stylesheet" href="/static/css/brand.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .style-pill {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-full);
+      background: white;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      transition: all var(--transition-fast);
+    }
+    .style-pill.active {
+      background: var(--primary-navy);
+      color: white;
+      border-color: var(--primary-navy);
+    }
+    @media print {
+      body * { visibility: hidden; }
+      #printable-area, #printable-area * { visibility: visible; }
+      #printable-area { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">✓</div>
+        <span>FIXROUTE</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/" class="nav-link">Home</a></li>
+        <li><a href="/search" class="nav-link">Find a Solution</a></li>
+        <li><a href="/tracker" class="nav-link">Track Complaint</a></li>
+        <li><a href="/complaint-generator" class="nav-link active">Draft Complaint</a></li>
+        <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+      </ul>
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- Main Generator Container -->
+  <main class="container" style="max-width: 1200px;">
+    <div style="margin-bottom: 2rem;">
+      <h1 style="font-size: 1.85rem; margin-bottom: 0.5rem;">Legal Grievance Letter Generator</h1>
+      <p style="color: var(--text-muted); font-size: 1rem;">
+        Draft a polite, structured, and legally grounded complaint letter ready to submit to customer care, the nodal grievance officer, or statutory ombudsman.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 2rem; align-items: start;">
+      
+      <!-- Left Column: Input Form -->
+      <div class="card" style="padding: 1.75rem;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1.25rem; color: var(--primary-navy);">1. Enter Grievance Details</h3>
+
+        <form id="generator-form" onsubmit="handleGenerate(event)">
+          <!-- Writing Style Selector -->
+          <div style="margin-bottom: 1.25rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; text-transform: uppercase; color: var(--text-muted);">
+              Writing Style
+            </label>
+            <div style="display: flex; gap: 0.5rem;">
+              <button type="button" class="style-pill active" onclick="setStyle('formal', this)">Formal / Standard</button>
+              <button type="button" class="style-pill" onclick="setStyle('concise', this)">Concise & Direct</button>
+              <button type="button" class="style-pill" onclick="setStyle('detailed', this)">Detailed Legal Notice</button>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Your Full Name / Signature</label>
+            <input type="text" id="gen-name" class="form-input" required placeholder="e.g. Sreekar">
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Organization / Service Provider Name</label>
+            <input type="text" id="gen-org" class="form-input" required placeholder="e.g. State Bank of India, BESCOM, Airtel">
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Description of What Happened</label>
+            <textarea id="gen-issue" class="form-textarea" rows="4" required placeholder="State clearly what went wrong, including financial amounts or dates..."></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+            <div>
+              <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Incident Date / Period</label>
+              <input type="text" id="gen-date" class="form-input" placeholder="e.g. 24 October 2026">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Existing Ticket / Ref ID</label>
+              <input type="text" id="gen-ref" class="form-input" placeholder="e.g. SR-8819230">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Prior Contact with Support (Optional)</label>
+            <input type="text" id="gen-prior" class="form-input" placeholder="e.g. Reported via mobile app, promised turnaround passed without resolution.">
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Desired Resolution / Remedy</label>
+            <textarea id="gen-relief" class="form-textarea" rows="2" required placeholder="e.g. Immediate refund of ₹5,000 to my source bank account and statutory delay compensation."></textarea>
+          </div>
+
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Evidence Documents Enclosed</label>
+            <div id="gen-evidence-wrap" style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem;">
+              <label><input type="checkbox" class="gen-ev-chk" value="Bank Account / Card Statement" checked> Bank Statement showing transaction debit</label>
+              <label><input type="checkbox" class="gen-ev-chk" value="Official Payment Receipt / Invoice" checked> Payment Receipt / Order confirmation</label>
+              <label><input type="checkbox" class="gen-ev-chk" value="Screenshot of error or failure notification"> Screenshot of error or service outage</label>
+              <label><input type="checkbox" class="gen-ev-chk" value="Previous Customer Care Ticket SMS / Email"> Previous Support Ticket acknowledgement</label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            Generate Complaint Draft &rarr;
+          </button>
+        </form>
+      </div>
+
+      <!-- Right Column: Live Draft Preview & Actions -->
+      <div>
+        <div class="card" style="padding: 1.75rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <h3 style="font-size: 1.2rem; color: var(--primary-navy);">2. Live Draft Preview</h3>
+            <div style="display: flex; gap: 0.5rem;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="copyDraftToClipboard()">
+                📋 Copy
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="downloadDraftAsTxt()">
+                📥 Download .TXT
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="printDraft()">
+                🖨️ Print / PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- Subject Line Display -->
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.775rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 0.25rem;">
+              Email Subject Line:
+            </label>
+            <div id="draft-subject-preview" style="background: #F1F5F9; padding: 0.65rem 0.85rem; border-radius: var(--radius-md); font-weight: 600; font-size: 0.9rem; border: 1px solid var(--border-color);">
+              FORMAL GRIEVANCE: [Subject will appear here once generated]
+            </div>
+          </div>
+
+          <!-- Editable Body Area -->
+          <div style="margin-bottom: 1.25rem;">
+            <label style="display: block; font-size: 0.775rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 0.25rem;">
+              Complaint Body (Fully Editable):
+            </label>
+            <textarea id="draft-body-preview" class="form-textarea" rows="16" style="font-family: monospace; font-size: 0.875rem; line-height: 1.6;" placeholder="Click 'Generate Complaint Draft' to create your formal letter..."></textarea>
+          </div>
+
+          <!-- Action Buttons Bar -->
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <button type="button" class="btn btn-teal" onclick="openEmailClient()">
+                ✉️ Open in Email Client
+              </button>
+              <button type="button" class="btn btn-navy" onclick="saveDraftToAccount()">
+                💾 Save Draft to Account
+              </button>
+            </div>
+
+            <button type="button" class="btn btn-outline" style="border-color: #3B82F6; color: #1D4ED8;" onclick="trackThisComplaint()">
+              🎯 Add to Complaint Tracker Dashboard &rarr;
+            </button>
+          </div>
+
+          <!-- Integrity notice -->
+          <p style="font-size: 0.775rem; color: var(--text-muted); margin-top: 1rem; line-height: 1.5; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+            <strong>Integrity Notice:</strong> FixRoute generates structured factual drafts based solely on the details you supply. Always verify all dates, account numbers, and figures before submitting to official external authorities.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="printable-area" style="display: none; padding: 2rem; font-family: serif; white-space: pre-wrap;"></div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+          <div class="brand-icon" style="width:28px; height:28px; font-size:0.95rem;">✓</div>
+          <span style="font-size:1.3rem; font-weight:800; color:white;">FIXROUTE</span>
+        </div>
+        <p>Tell us your problem. We'll tell you who can fix it.</p>
+        <p style="font-size: 0.825rem; color: #64748B;">Founder: Sreekar</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/search">Find a Solution</a></li>
+          <li><a href="/tracker">Complaint Tracker</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Trust & Legal</h4>
+        <ul>
+          <li><a href="/about">About FixRoute</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>&copy; 2026 FixRoute. Built for India.</div>
+    </div>
+  </footer>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/nav.js"></script>
+  <script>
+    let currentStyle = "formal";
+    let activeRouteId = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Pre-fill from query params if passed from route detail
+      const urlParams = new URLSearchParams(window.location.search);
+      const org = urlParams.get("org");
+      const issue = urlParams.get("issue");
+      const cat = urlParams.get("cat");
+      const routeId = urlParams.get("route_id");
+      const evidence = urlParams.get("evidence");
+
+      if (org) document.getElementById("gen-org").value = org;
+      if (issue) document.getElementById("gen-issue").value = issue;
+      if (routeId) activeRouteId = parseInt(routeId);
+
+      // Pre-fill user name if logged in
+      if (window.fixRoute.user) {
+        document.getElementById("gen-name").value = window.fixRoute.user.full_name;
+      }
+
+      if (org && issue) {
+        handleGenerate();
+      }
+    });
+
+    function setStyle(style, btnEl) {
+      currentStyle = style;
+      document.querySelectorAll(".style-pill").forEach(el => el.classList.remove("active"));
+      btnEl.classList.add("active");
+      handleGenerate();
+    }
+
+    async function handleGenerate(e) {
+      if (e) e.preventDefault();
+      const name = document.getElementById("gen-name").value.trim() || "[Your Full Name]";
+      const org = document.getElementById("gen-org").value.trim();
+      const issue = document.getElementById("gen-issue").value.trim();
+      const date = document.getElementById("gen-date").value.trim();
+      const ref = document.getElementById("gen-ref").value.trim();
+      const prior = document.getElementById("gen-prior").value.trim();
+      const relief = document.getElementById("gen-relief").value.trim() || "Immediate resolution and formal response";
+
+      const evChecked = Array.from(document.querySelectorAll(".gen-ev-chk:checked")).map(el => el.value);
+
+      if (!org || !issue) {
+        return;
+      }
+
+      try {
+        const result = await window.fixRoute.generateDraft({
+          route_id: activeRouteId,
+          user_name: name,
+          organization: org,
+          issue_description: issue,
+          incident_date: date || null,
+          previous_attempts: prior || null,
+          previous_ref_number: ref || null,
+          desired_resolution: relief,
+          evidence_collected: evChecked,
+          style: currentStyle
+        });
+
+        document.getElementById("draft-subject-preview").textContent = result.subject;
+        document.getElementById("draft-body-preview").value = result.body;
+        showToast("Complaint draft updated.", "info");
+      } catch (err) {
+        showToast("Error generating draft: " + err.message, "error");
+      }
+    }
+
+    function copyDraftToClipboard() {
+      const body = document.getElementById("draft-body-preview").value;
+      if (!body) return;
+      navigator.clipboard.writeText(body).then(() => {
+        showToast("Complaint draft copied to clipboard!", "success");
+      }).catch(() => {
+        showToast("Failed to copy automatically. Please select text and copy manually.", "error");
+      });
+    }
+
+    function downloadDraftAsTxt() {
+      const subject = document.getElementById("draft-subject-preview").textContent;
+      const body = document.getElementById("draft-body-preview").value;
+      if (!body) return;
+
+      const fullContent = `SUBJECT: ${subject}\n\n${body}`;
+      const blob = new Blob([fullContent], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `FixRoute_Complaint_${new Date().toISOString().slice(0,10)}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Complaint downloaded as text file.", "success");
+    }
+
+    function printDraft() {
+      const subject = document.getElementById("draft-subject-preview").textContent;
+      const body = document.getElementById("draft-body-preview").value;
+      if (!body) return;
+
+      const printArea = document.getElementById("printable-area");
+      printArea.innerHTML = `<h2>${escapeHTML(subject)}</h2><hr style="margin:1rem 0;"><pre style="font-family:inherit; white-space:pre-wrap;">${escapeHTML(body)}</pre>`;
+      window.print();
+    }
+
+    function openEmailClient() {
+      const subject = document.getElementById("draft-subject-preview").textContent;
+      const body = document.getElementById("draft-body-preview").value;
+      if (!body) return;
+
+      const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailtoUrl;
+    }
+
+    async function saveDraftToAccount() {
+      if (!window.fixRoute.isAuthenticated()) {
+        openAuthModal("login");
+        showToast("Please sign in to save complaint drafts to your account.", "info");
+        return;
+      }
+
+      const org = document.getElementById("gen-org").value.trim();
+      const issue = document.getElementById("gen-issue").value.trim();
+      const subject = document.getElementById("draft-subject-preview").textContent;
+      const body = document.getElementById("draft-body-preview").value;
+
+      try {
+        await window.fixRoute.saveDraft({
+          route_id: activeRouteId,
+          title: `Grievance - ${org}`,
+          organization: org,
+          issue_description: issue,
+          style: currentStyle,
+          subject,
+          body
+        });
+        showToast("Draft saved to your dashboard successfully!", "success");
+      } catch (err) {
+        showToast(err.message || "Failed to save draft", "error");
+      }
+    }
+
+    function trackThisComplaint() {
+      const org = document.getElementById("gen-org").value.trim();
+      const issue = document.getElementById("gen-issue").value.trim();
+      const ref = document.getElementById("gen-ref").value.trim();
+
+      const params = new URLSearchParams();
+      params.append("org", org);
+      params.append("title", issue.slice(0, 60));
+      if (ref) params.append("ref", ref);
+      if (activeRouteId) params.append("route_id", activeRouteId);
+
+      window.location.href = `/tracker?${params.toString()}`;
+    }
+  </script>
+</body>
+</html>

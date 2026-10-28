@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Problem Routes — FixRoute</title>
+  <meta name="description" content="Search verified Indian grievance and complaint-routing pathways by problem description, category, and state jurisdiction.">
+  <link rel="stylesheet" href="/static/css/brand.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">✓</div>
+        <span>FIXROUTE</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/" class="nav-link">Home</a></li>
+        <li><a href="/search" class="nav-link active">Find a Solution</a></li>
+        <li><a href="/#categories" class="nav-link">Categories</a></li>
+        <li><a href="/#how-it-works" class="nav-link">How It Works</a></li>
+        <li><a href="/tracker" class="nav-link">Track Complaint</a></li>
+        <li><a href="/complaint-generator" class="nav-link">Draft Complaint</a></li>
+        <li><a href="/about" class="nav-link">About</a></li>
+      </ul>
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- Search Header & Filters -->
+  <div style="background: white; border-bottom: 1px solid var(--border-color); padding: 2rem 1.5rem;">
+    <div class="container" style="padding-top: 0; padding-bottom: 0;">
+      <h1 style="font-size: 1.85rem; margin-bottom: 0.5rem;">Smart Problem Discovery</h1>
+      <p style="color: var(--text-muted); font-size: 0.975rem; margin-bottom: 1.5rem;">
+        Type what happened in everyday language. We'll identify the legal authority, required documents, and complaint steps.
+      </p>
+
+      <form id="search-page-form" onsubmit="executeSearch(event)">
+        <div class="search-input-wrapper" style="margin-bottom: 0.875rem;">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-query" class="search-input-main" 
+                 placeholder="E.g. Bank debited money but UPI transaction failed, Landlord not refunding deposit..." 
+                 required autocomplete="off">
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) auto; gap: 0.75rem; align-items: center;">
+          <select id="search-category" class="form-select">
+            <option value="">All Categories (Auto-detect)</option>
+            <option value="electricity-water">Electricity and Water</option>
+            <option value="banking-payments">Banking and Payments</option>
+            <option value="college-university">College and University</option>
+            <option value="internet-telecom">Internet and Telecom</option>
+            <option value="housing-rental">Housing and Rental Issues</option>
+            <option value="consumer-complaints">Consumer Complaints</option>
+            <option value="workplace-problems">Workplace Problems</option>
+            <option value="transport-public">Transport and Public Services</option>
+            <option value="government-services">Government Services</option>
+            <option value="cybercrime-fraud">Cyber Crime & Fraud</option>
+          </select>
+
+          <select id="search-state" class="form-select">
+            <option value="">Jurisdiction (All India)</option>
+            <option value="All India">All India (National)</option>
+            <option value="Maharashtra">Maharashtra</option>
+            <option value="Karnataka">Karnataka</option>
+            <option value="Delhi">Delhi NCT</option>
+            <option value="Tamil Nadu">Tamil Nadu</option>
+            <option value="Telangana">Telangana</option>
+            <option value="Uttar Pradesh">Uttar Pradesh</option>
+            <option value="Gujarat">Gujarat</option>
+            <option value="West Bengal">West Bengal</option>
+            <option value="Rajasthan">Rajasthan</option>
+            <option value="Kerala">Kerala</option>
+          </select>
+
+          <input type="text" id="search-provider" class="form-input" placeholder="Provider contacted (e.g. SBI, Airtel)">
+
+          <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
+            Search Routes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Search Results Container -->
+  <main class="container">
+    <div id="search-status-bar" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.95rem;">
+      <span id="results-count-text">Ready to search.</span>
+      <div id="ai-clarify-btn-wrap" style="display:none;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="triggerAIClarify()">
+          ✨ AI Clarification Assistant
+        </button>
+      </div>
+    </div>
+
+    <!-- Clarification / Guidance Box -->
+    <div id="clarification-card" class="card" style="display:none; background:#EFF6FF; border-color:#BFDBFE; margin-bottom:1.5rem; padding:1.25rem 1.5rem;">
+      <div style="display:flex; gap:0.75rem; align-items:flex-start;">
+        <span style="font-size:1.4rem;">💡</span>
+        <div>
+          <h4 style="color:#1E40AF; margin-bottom:0.25rem;">Clarification & Safe Next Steps</h4>
+          <p id="clarification-text" style="color:#1E3A8A; font-size:0.925rem; margin-bottom:0.5rem;"></p>
+          <div id="clarification-actions" style="font-size:0.875rem; color:#3B82F6;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results List -->
+    <div id="results-list" style="display: flex; flex-direction: column; gap: 1.25rem;">
+      <!-- Populated dynamically -->
+      <div class="card" style="text-align: center; padding: 4rem 1.5rem; color: var(--text-muted);">
+        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">Enter your problem description above to find verified routing options.</p>
+        <p style="font-size: 0.875rem;">Or try one of the popular categories like Banking, Electricity, or College issues.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+          <div class="brand-icon" style="width:28px; height:28px; font-size:0.95rem;">✓</div>
+          <span style="font-size:1.3rem; font-weight:800; color:white;">FIXROUTE</span>
+        </div>
+        <p>Tell us your problem. We'll tell you who can fix it.</p>
+        <p style="font-size: 0.825rem; color: #64748B;">Founder: Sreekar</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/tracker">Complaint Tracker</a></li>
+          <li><a href="/complaint-generator">Complaint Generator</a></li>
+          <li><a href="/dashboard">Dashboard</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Trust & Integrity</h4>
+        <ul>
+          <li><a href="/about">About FixRoute</a></li>
+          <li><a href="/help">Help & Contact</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="/terms">Terms of Service</a></li>
+          <li><a href="/terms#disclaimer">Disclaimer</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>&copy; 2026 FixRoute. Built for India.</div>
+    </div>
+  </footer>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/nav.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Parse query params
+      const urlParams = new URLSearchParams(window.location.search);
+      const q = urlParams.get("q") || "";
+      const cat = urlParams.get("category") || "";
+      const st = urlParams.get("state") || "";
+
+      if (q) document.getElementById("search-query").value = q;
+      if (cat) document.getElementById("search-category").value = cat;
+      if (st) document.getElementById("search-state").value = st;
+
+      if (q || cat) {
+        executeSearch();
+      }
+    });
+
+    async function executeSearch(e) {
+      if (e) e.preventDefault();
+      const query = document.getElementById("search-query").value.trim();
+      const category = document.getElementById("search-category").value;
+      const state = document.getElementById("search-state").value;
+      const provider = document.getElementById("search-provider").value.trim();
+
+      const resultsList = document.getElementById("results-list");
+      const countText = document.getElementById("results-count-text");
+      const clarifyCard = document.getElementById("clarification-card");
+      const clarifyText = document.getElementById("clarification-text");
+      const clarifyActions = document.getElementById("clarification-actions");
+      const aiBtnWrap = document.getElementById("ai-clarify-btn-wrap");
+
+      resultsList.innerHTML = `<div class="card" style="text-align:center; padding:3rem;"><p>Searching verified Indian resolution pathways...</p></div>`;
+
+      try {
+        const data = await window.fixRoute.search(query, category || null, state || null, null, provider || null);
+        
+        countText.textContent = `Found ${data.total_found} resolution route${data.total_found === 1 ? '' : 's'} for "${escapeHTML(query || 'All Problems')}"`;
+
+        if (data.clarification_question || data.safe_next_step) {
+          clarifyCard.style.display = "block";
+          clarifyText.textContent = data.clarification_question || "";
+          clarifyActions.innerHTML = data.safe_next_step ? `<strong>Recommended Next Step:</strong> ${escapeHTML(data.safe_next_step)}` : "";
+        } else {
+          clarifyCard.style.display = "none";
+        }
+
+        aiBtnWrap.style.display = query ? "block" : "none";
+
+        if (!data.results || data.results.length === 0) {
+          resultsList.innerHTML = `
+            <div class="card" style="text-align: center; padding: 3rem 1.5rem;">
+              <h3 style="margin-bottom:0.5rem; color:var(--primary-navy);">No Exact Verified Route Found</h3>
+              <p style="color:var(--text-muted); max-width:540px; margin:0 auto 1.5rem;">
+                We could not locate an exact regulatory route for this specific search query. Under standard Indian administrative and consumer rules:
+              </p>
+              <div style="max-width:540px; margin:0 auto 1.5rem; text-align:left; background:#F8FAFC; padding:1.25rem; border-radius:var(--radius-md);">
+                <p>1. Always first serve a written grievance notice to the company/institution's official Grievance Redressal Officer.</p>
+                <p style="margin-top:0.5rem;">2. You can use our <a href="/complaint-generator">Complaint Generator</a> to create a professional legal grievance letter.</p>
+                <p style="margin-top:0.5rem;">3. For general commercial disputes, call the National Consumer Helpline at <strong>1915</strong>.</p>
+              </div>
+              <a href="/search" class="btn btn-outline btn-sm">Clear Search & Browse All Categories</a>
+            </div>
+          `;
+          return;
+        }
+
+        resultsList.innerHTML = data.results.map(item => {
+          const r = item.route;
+          return `
+            <div class="card card-interactive" style="display:flex; flex-direction:column; gap:1rem;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+                <div>
+                  <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.35rem; flex-wrap:wrap;">
+                    <span class="badge ${r.verification_status === 'verified' ? 'badge-verified' : 'badge-unverified'}">
+                      ${r.verification_status === 'verified' ? '✓ Verified Route' : r.verification_status}
+                    </span>
+                    <span class="badge badge-category">${escapeHTML(r.category_name || 'General')}</span>
+                    <span style="font-size:0.8rem; color:var(--text-muted);">${escapeHTML(r.jurisdiction)}</span>
+                  </div>
+                  <h3 style="font-size:1.25rem; color:var(--primary-navy);">
+                    <a href="/route-detail?id=${r.slug}" style="color:inherit;">${escapeHTML(r.title)}</a>
+                  </h3>
+                </div>
+                <div style="text-align:right;">
+                  <span style="font-size:0.85rem; font-weight:700; color:var(--secondary-blue);">${item.confidence_label} Match</span>
+                  <div style="font-size:0.75rem; color:var(--text-muted);">Score: ${item.relevance_score}</div>
+                </div>
+              </div>
+
+              <div style="background:#F8FAFC; padding:1rem; border-radius:var(--radius-md); font-size:0.925rem;">
+                <p style="margin-bottom:0.35rem;"><strong>Responsible Authority:</strong> ${escapeHTML(r.responsible_authority)} (${escapeHTML(r.authority_type)})</p>
+                <p style="color:var(--text-muted); font-size:0.875rem;"><strong>Why this route:</strong> ${escapeHTML(r.reason_for_routing)}</p>
+              </div>
+
+              ${item.match_reasons && item.match_reasons.length > 0 ? `
+                <div style="font-size:0.825rem; color:var(--text-muted); display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                  <span>Matching Factors:</span>
+                  ${item.match_reasons.map(reason => `<span style="background:#E2E8F0; padding:0.15rem 0.5rem; border-radius:4px; font-size:0.775rem;">${escapeHTML(reason)}</span>`).join('')}
+                </div>
+              ` : ''}
+
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem; pt:0.5rem; border-top:1px solid var(--border-color); flex-wrap:wrap; gap:0.75rem;">
+                <span style="font-size:0.8rem; color:var(--text-muted);">
+                  Last verified: ${r.last_verified_at ? new Date(r.last_verified_at).toLocaleDateString('en-IN', { month:'short', year:'numeric' }) : 'Recent'}
+                </span>
+                <div style="display:flex; gap:0.5rem;">
+                  <button type="button" class="btn btn-outline btn-sm" onclick="saveRouteDirectly(${r.id}, this)">
+                    Save Route
+                  </button>
+                  <a href="/route-detail?id=${r.slug}" class="btn btn-primary btn-sm">
+                    View Resolution Guide &rarr;
+                  </a>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (err) {
+        resultsList.innerHTML = `<div class="alert alert-danger">Error fetching search results: ${escapeHTML(err.message)}</div>`;
+      }
+    }
+
+    async function triggerAIClarify() {
+      const query = document.getElementById("search-query").value.trim();
+      const category = document.getElementById("search-category").value;
+      if (!query) return;
+
+      const clarifyCard = document.getElementById("clarification-card");
+      const clarifyText = document.getElementById("clarification-text");
+      const clarifyActions = document.getElementById("clarification-actions");
+
+      clarifyCard.style.display = "block";
+      clarifyText.innerHTML = "<em>Analyzing problem details with FixRoute Assistant...</em>";
+
+      try {
+        const res = await window.fixRoute.clarifyWithAI(query, category);
+        clarifyText.textContent = res.clarification;
+        if (res.suggested_actions && res.suggested_actions.length > 0) {
+          clarifyActions.innerHTML = "<strong>Recommended Action Checklist:</strong><ul style='margin-left:1.25rem; margin-top:0.25rem;'>" + 
+            res.suggested_actions.map(a => `<li>${escapeHTML(a)}</li>`).join('') + "</ul>";
+        }
+      } catch (err) {
+        clarifyText.textContent = "Could not fetch AI clarification at this time. Standard rule-based guidance is active.";
+      }
+    }
+
+    async function saveRouteDirectly(routeId, btnEl) {
+      if (!window.fixRoute.isAuthenticated()) {
+        openAuthModal("login");
+        showToast("Please sign in to save routes to your account.", "info");
+        return;
+      }
+
+      try {
+        btnEl.disabled = true;
+        btnEl.textContent = "Saving...";
+        await window.fixRoute.saveRoute(routeId);
+        btnEl.textContent = "✓ Saved";
+        showToast("Route saved to your dashboard!", "success");
+      } catch (err) {
+        btnEl.disabled = false;
+        btnEl.textContent = "Save Route";
+        showToast(err.message || "Could not save route", "error");
+      }
+    }
+  </script>
+</body>
+</html>

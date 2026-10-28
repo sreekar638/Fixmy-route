@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FixRoute — Tell us your problem. We'll tell you who can fix it.</title>
+  <meta name="description" content="FixRoute is India's problem-solving and complaint-routing platform. Identify responsible authorities, gather evidence, draft complaints, and track resolutions.">
+  <link rel="stylesheet" href="/static/css/brand.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">✓</div>
+        <span>FIXROUTE</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/" class="nav-link active">Home</a></li>
+        <li><a href="/search" class="nav-link">Find a Solution</a></li>
+        <li><a href="#categories" class="nav-link">Categories</a></li>
+        <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+        <li><a href="/tracker" class="nav-link">Track Complaint</a></li>
+        <li><a href="/complaint-generator" class="nav-link">Draft Complaint</a></li>
+        <li><a href="/about" class="nav-link">About</a></li>
+      </ul>
+      <div class="nav-auth" id="nav-auth-container">
+        <!-- Injected dynamically by nav.js -->
+      </div>
+      <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-tagline">National Problem-Solving & Grievance Routing</div>
+      <h1 class="hero-title">Stuck with a problem?<br>Find your way to a solution.</h1>
+      <p class="hero-subtitle">
+        Tell FixRoute what's wrong. Discover who can help, how to raise your complaint, what evidence you need, and what to do next.
+      </p>
+
+      <!-- Main Search Box Card -->
+      <div class="search-card">
+        <form id="hero-search-form" onsubmit="handleHeroSearch(event)">
+          <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="hero-query-input" class="search-input-main" 
+                   placeholder="Describe your problem in plain words (e.g. Bank transaction failed, landlord won't fix leak...)" 
+                   required autocomplete="off">
+          </div>
+          <div class="search-filters-row">
+            <div>
+              <select id="hero-category-select" class="form-select">
+                <option value="">All Categories (Auto-detect)</option>
+                <option value="electricity-water">Electricity and Water</option>
+                <option value="banking-payments">Banking and Payments</option>
+                <option value="college-university">College and University</option>
+                <option value="internet-telecom">Internet and Telecom</option>
+                <option value="housing-rental">Housing and Rental Issues</option>
+                <option value="consumer-complaints">Consumer Complaints</option>
+                <option value="workplace-problems">Workplace Problems</option>
+                <option value="transport-public">Transport and Public Services</option>
+                <option value="government-services">Government Services</option>
+                <option value="cybercrime-fraud">Cyber Crime & Fraud</option>
+              </select>
+            </div>
+            <div>
+              <select id="hero-state-select" class="form-select">
+                <option value="">Jurisdiction / State (Optional)</option>
+                <option value="All India">All India (National)</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Delhi">Delhi NCT</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Telangana">Telangana</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="West Bengal">West Bengal</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Kerala">Kerala</option>
+              </select>
+            </div>
+            <div>
+              <button type="submit" class="btn btn-primary" style="height: 100%; white-space: nowrap;">
+                Find My Route &rarr;
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Example Search Chips -->
+        <div class="search-examples">
+          <span style="font-weight: 600;">Popular Examples:</span>
+          <button type="button" class="chip-btn" onclick="populateHeroQuery('My electricity bill is incorrect.')">My electricity bill is incorrect</button>
+          <button type="button" class="chip-btn" onclick="populateHeroQuery('My college is not returning my deposit.')">My college is not returning my deposit</button>
+          <button type="button" class="chip-btn" onclick="populateHeroQuery('My internet connection has been down for three days.')">Internet connection down 3 days</button>
+          <button type="button" class="chip-btn" onclick="populateHeroQuery('My bank transaction failed but money was deducted.')">Bank transaction failed but deducted</button>
+          <button type="button" class="chip-btn" onclick="populateHeroQuery('My landlord is not fixing a water leak.')">Landlord not fixing water leak</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Problem Categories Section -->
+  <section class="container" id="categories">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem;">
+      <div>
+        <h2 style="font-size: 1.85rem;">Popular Problem Categories</h2>
+        <p style="color: var(--text-muted); font-size: 1rem; margin-top: 0.25rem;">
+          Select an everyday problem domain to view verified resolution routes across India.
+        </p>
+      </div>
+      <a href="/search" class="btn btn-outline btn-sm">Explore All Routes</a>
+    </div>
+
+    <div class="categories-grid" id="categories-container">
+      <!-- Loaded dynamically via JavaScript with fallback -->
+      <a href="/search?category=electricity-water" class="category-card">
+        <div class="category-icon-box">⚡</div>
+        <div class="category-title">Electricity & Water</div>
+        <div class="category-desc">Billing inaccuracies, faulty power meters, unexpected power outages, and municipal water leakages.</div>
+        <span class="badge badge-category" style="align-self: flex-start;">Discom & CGRF</span>
+      </a>
+
+      <a href="/search?category=banking-payments" class="category-card">
+        <div class="category-icon-box">💳</div>
+        <div class="category-title">Banking & Payments</div>
+        <div class="category-desc">Failed UPI/ATM transactions, unreversed account debits, unauthorized card charges, and loan disputes.</div>
+        <span class="badge badge-category" style="align-self: flex-start;">RBI CMS Ombudsman</span>
+      </a>
+
+      <a href="/search?category=college-university" class="category-card">
+        <div class="category-icon-box">🎓</div>
+        <div class="category-title">College & University</div>
+        <div class="category-desc">Withheld caution deposits, fee refund delays, original academic certificates retention, and student rights.</div>
+        <span class="badge badge-category" style="align-self: flex-start;">UGC e-Samadhan</span>
+      </a>
+
+      <a href="/search?category=internet-telecom" class="category-card">
+        <div class="category-icon-box">📶</div>
+        <div class="category-title">Internet & Telecom</div>
+        <div class="category-desc">Broadband fiber outages, SIM porting delays, billing overcharges, and telecom regulatory escalations.</div>
+        <span class="badge badge-category" style="align-self: flex-start;">TRAI & DoT Portal</span>
+      </a>
+
+      <a href="/search?category=consumer-complaints" class="category-card">
+        <div class="category-icon-box">🛍️</div>
+        <div class="category-title">Consumer Complaints</div>
+        <div class="category-desc">E-commerce return denials, defective electronic appliances, warranty refusals, and consumer court filings.</div>
+        <span class="badge badge-category" style="align-self: flex-start;">National Consumer Helpline</span>
+      </a>
+
+      <a href="/search?category=housing-rental" class="category-card">
+        <div class="category-icon-box">🏠</div>
+        <div class="category-title">Housing & Rental Issues</div>
+        <div class="category-desc">Landlord maintenance neglect, plumbing water leaks, security deposit disputes, and society RWA conflicts.</div>
+        <span class="badge badge-category" style="align-self: flex-start;">Rent Authority & RERA</span>
+      </a>
+
+      <a href="/search?category=workplace-problems" class="category-card">
+        <div class="category-icon-box">💼</div>
+        <div class="category-title">Workplace Problems</div>
+        <div class="category-desc">Unpaid employee salaries, withheld relieving letters, and missing employer PF deposits.</div>
+        <span class="badge badge-category" style="align-self: flex-start;">EPFO & Labour Commission</span>
+      </a>
+
+      <a href="/search?category=transport-public" class="category-card">
+        <div class="category-icon-box">🚗</div>
+        <div class="category-title">Transport & Public Services</div>
+        <div class="category-desc">RTO driving license delays, erroneous traffic challans, vehicle transfers, and railway grievances.</div>
+        <span class="badge badge-category" style="align-self: flex-start;">Parivahan & RailMadad</span>
+      </a>
+
+      <a href="/search?category=government-services" class="category-card">
+        <div class="category-icon-box">🏛️</div>
+        <div class="category-title">Government Services</div>
+        <div class="category-desc">Passport delays, Aadhaar corrections, civil certificates, municipal sanitation, and central grievances.</div>
+        <span class="badge badge-category" style="align-self: flex-start;">CPGRAMS National Portal</span>
+      </a>
+
+      <a href="/search?category=cybercrime-fraud" class="category-card">
+        <div class="category-icon-box">🛡️</div>
+        <div class="category-title">Everyday Fraud & Cyber Crime</div>
+        <div class="category-desc">Online payment scams, phishing frauds, OTP theft, and immediate account freeze procedures.</div>
+        <span class="badge badge-category" style="align-self: flex-start;">1930 Cyber Helpline</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- How FixRoute Works Section -->
+  <section class="container" id="how-it-works" style="margin-top: 2rem;">
+    <div style="text-align: center; max-width: 680px; margin: 0 auto 3rem;">
+      <h2 style="font-size: 2rem; margin-bottom: 0.75rem;">How FixRoute Works</h2>
+      <p style="color: var(--text-muted); font-size: 1.05rem;">
+        Four clear, actionable steps from the moment something goes wrong to official resolution.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+      <div class="card" style="text-align: center; padding: 2rem 1.5rem;">
+        <div style="width: 50px; height: 50px; background: #EFF6FF; color: var(--secondary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; font-weight: 800; margin: 0 auto 1.25rem;">1</div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Describe Your Problem</h3>
+        <p style="font-size: 0.925rem; color: var(--text-muted); line-height: 1.6;">
+          Type what went wrong in your own words. FixRoute identifies the core issue and jurisdiction without requiring bureaucratic knowledge.
+        </p>
+      </div>
+
+      <div class="card" style="text-align: center; padding: 2rem 1.5rem;">
+        <div style="width: 50px; height: 50px; background: #EFF6FF; color: var(--secondary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; font-weight: 800; margin: 0 auto 1.25rem;">2</div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Identify the Authority</h3>
+        <p style="font-size: 0.925rem; color: var(--text-muted); line-height: 1.6;">
+          Discover the exact regulatory body, ombudsman, or grievance officer legally responsible, backed by verified Indian statutes.
+        </p>
+      </div>
+
+      <div class="card" style="text-align: center; padding: 2rem 1.5rem;">
+        <div style="width: 50px; height: 50px; background: #EFF6FF; color: var(--secondary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; font-weight: 800; margin: 0 auto 1.25rem;">3</div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Prepare & Draft</h3>
+        <p style="font-size: 0.925rem; color: var(--text-muted); line-height: 1.6;">
+          Follow an interactive evidence checklist, generate a polite and formal complaint draft, and download it as text or print to PDF.
+        </p>
+      </div>
+
+      <div class="card" style="text-align: center; padding: 2rem 1.5rem;">
+        <div style="width: 50px; height: 50px; background: #EFF6FF; color: var(--secondary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; font-weight: 800; margin: 0 auto 1.25rem;">4</div>
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Track & Escalate</h3>
+        <p style="font-size: 0.925rem; color: var(--text-muted); line-height: 1.6;">
+          Log your complaint reference number, set follow-up milestones, and view pre-vetted statutory escalation options if deadlines lapse.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Example Solution Route Section -->
+  <section class="container" style="margin-top: 2rem;">
+    <div class="card" style="border: 2px solid #BFDBFE; background: #FFFFFF; padding: 2.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+        <div>
+          <span class="badge badge-verified" style="margin-bottom: 0.5rem;">Verified Resolution Route</span>
+          <h3 style="font-size: 1.4rem; color: var(--primary-navy);">Bank Transaction Failed but Money Was Deducted (UPI / ATM / IMPS)</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">Category: Banking and Payments &bull; Jurisdiction: All India</p>
+        </div>
+        <a href="/route-detail?id=bank-transaction-failed-money-deducted" class="btn btn-primary btn-sm">View Complete Step-by-Step Guide &rarr;</a>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; background: #F8FAFC; padding: 1.5rem; border-radius: var(--radius-md);">
+        <div>
+          <h4 style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 0.35rem;">Responsible Authority</h4>
+          <p style="font-weight: 700; color: var(--primary-navy);">Bank Principal Nodal Officer & RBI Integrated Ombudsman</p>
+        </div>
+        <div>
+          <h4 style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 0.35rem;">Statutory Rule & TAT</h4>
+          <p style="font-size: 0.925rem;">RBI TAT Harmonisation: Auto-reversal within T+1 day, or ₹100/day statutory compensation.</p>
+        </div>
+        <div>
+          <h4 style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 0.35rem;">Verified Channel</h4>
+          <p style="font-size: 0.925rem;">Official Portal: <a href="https://cms.rbi.org.in/" target="_blank" rel="noopener">cms.rbi.org.in</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust & Transparency Section -->
+  <section class="container" style="margin-top: 2rem;">
+    <div class="card" style="padding: 2.5rem; background: linear-gradient(to right, #FFFFFF, #F8FAFC);">
+      <h2 style="font-size: 1.75rem; margin-bottom: 1rem;">Our Commitment to Accuracy & Privacy</h2>
+      <p style="color: var(--text-muted); line-height: 1.7; font-size: 1rem; margin-bottom: 1.5rem;">
+        FixRoute operates on eight core principles to eliminate the confusion citizens face when resolving everyday grievances in India:
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+        <div>
+          <h4 style="font-size: 1.05rem; margin-bottom: 0.35rem; color: var(--primary-navy);">🔒 Zero Data Harvesting</h4>
+          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">
+            We never ask for sensitive credentials such as Aadhaar OTPs, banking PINs, or CVVs. All complaint drafts and records are private to your session.
+          </p>
+        </div>
+
+        <div>
+          <h4 style="font-size: 1.05rem; margin-bottom: 0.35rem; color: var(--primary-navy);">📜 Verified Statutory Sources</h4>
+          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">
+            Every route cites real government acts, gazette notifications, or regulatory guidelines (RBI, TRAI, UGC, Consumer Protection Act 2019). We never invent contact numbers.
+          </p>
+        </div>
+
+        <div>
+          <h4 style="font-size: 1.05rem; margin-bottom: 0.35rem; color: var(--primary-navy);">🛡️ Independent & Transparent</h4>
+          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">
+            FixRoute is an independent civic utility founded by Sreekar to empower consumers. We clearly indicate verified versus user-submitted information.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+          <div class="brand-icon" style="width:28px; height:28px; font-size:0.95rem;">✓</div>
+          <span style="font-size:1.3rem; font-weight:800; color:white;">FIXROUTE</span>
+        </div>
+        <p style="margin-bottom: 1rem;">
+          Tell us your problem. We'll tell you who can fix it.<br>
+          An independent problem-solving and resolution guidance platform for India.
+        </p>
+        <p style="font-size: 0.825rem; color: #64748B;">
+          Founder & Owner: Sreekar
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/search">Find a Solution</a></li>
+          <li><a href="/tracker">Track Complaint</a></li>
+          <li><a href="/complaint-generator">Draft a Complaint</a></li>
+          <li><a href="/dashboard">User Dashboard</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Help & Integrity</h4>
+        <ul>
+          <li><a href="/about">About FixRoute</a></li>
+          <li><a href="/help">Help & FAQ</a></li>
+          <li><a href="/help#contact">Contact Support</a></li>
+          <li><a href="javascript:void(0)" onclick="openCorrectionModal()">Report Incorrect Info</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Legal & Privacy</h4>
+        <ul>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
+          <li><a href="/terms#disclaimer">Regulatory Disclaimer</a></li>
+          <li><a href="/terms#accessibility">Accessibility Statement</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 FixRoute. Built for India. All rights reserved.</div>
+      <div>
+        <span style="color: var(--accent-teal);">●</span> System Status: All Grievance Directories Operational
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/nav.js"></script>
+  <script>
+    function populateHeroQuery(text) {
+      const input = document.getElementById("hero-query-input");
+      if (input) {
+        input.value = text;
+        input.focus();
+      }
+    }
+
+    function handleHeroSearch(e) {
+      e.preventDefault();
+      const query = document.getElementById("hero-query-input").value.trim();
+      const category = document.getElementById("hero-category-select").value;
+      const state = document.getElementById("hero-state-select").value;
+
+      const params = new URLSearchParams();
+      if (query) params.append("q", query);
+      if (category) params.append("category", category);
+      if (state) params.append("state", state);
+
+      window.location.href = `/search?${params.toString()}`;
+    }
+
+    function openCorrectionModal() {
+      showToast("To report an incorrect route or broken link, please open any route details page and click 'Report Incorrect Information'.", "info");
+    }
+  </script>
+</body>
+</html>

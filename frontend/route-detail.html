@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resolution Guide — FixRoute</title>
+  <link rel="stylesheet" href="/static/css/brand.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">✓</div>
+        <span>FIXROUTE</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/" class="nav-link">Home</a></li>
+        <li><a href="/search" class="nav-link">Find a Solution</a></li>
+        <li><a href="/tracker" class="nav-link">Track Complaint</a></li>
+        <li><a href="/complaint-generator" class="nav-link">Draft Complaint</a></li>
+        <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+      </ul>
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- Route Detail Main Container -->
+  <main class="container" id="route-container" style="max-width: 1040px;">
+    <div id="loading-state" class="card" style="text-align: center; padding: 4rem;">
+      <p style="color: var(--text-muted); font-size: 1.1rem;">Loading verified resolution guide...</p>
+    </div>
+
+    <div id="content-area" style="display: none;">
+      <!-- Breadcrumb & Back -->
+      <div style="margin-bottom: 1.25rem;">
+        <a href="/search" style="font-size: 0.9rem; color: var(--text-muted);">&larr; Back to Problem Search</a>
+      </div>
+
+      <!-- Route Header Card -->
+      <div class="card" style="margin-bottom: 2rem; border-top: 4px solid var(--secondary-blue);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+              <span id="route-verification-badge" class="badge badge-verified">✓ Verified Route</span>
+              <span id="route-category-badge" class="badge badge-category">Category</span>
+              <span id="route-jurisdiction-badge" style="font-size: 0.8rem; color: var(--text-muted); background: #F1F5F9; padding: 0.2rem 0.5rem; border-radius: 4px;">Jurisdiction</span>
+            </div>
+            <h1 id="route-title" style="font-size: 1.85rem; color: var(--primary-navy); margin-bottom: 0.5rem;">Route Title</h1>
+            <p id="route-description" style="color: #334155; font-size: 1.05rem; line-height: 1.6;"></p>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button id="save-route-btn" class="btn btn-outline btn-sm" onclick="toggleSaveCurrentRoute()">
+              Bookmark Route
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="openCorrectionModalForRoute()" style="color: #64748B;">
+              Report Incorrect Info
+            </button>
+          </div>
+        </div>
+
+        <!-- Metadata Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; background: #F8FAFC; padding: 1.25rem; border-radius: var(--radius-md); margin-top: 1.5rem; border: 1px solid var(--border-color);">
+          <div>
+            <span style="font-size: 0.775rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em;">Responsible Authority</span>
+            <p id="route-authority" style="font-weight: 700; color: var(--primary-navy); margin-top: 0.25rem;"></p>
+          </div>
+          <div>
+            <span style="font-size: 0.775rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em;">Official Channel</span>
+            <p id="route-channel" style="margin-top: 0.25rem; font-size: 0.925rem;"></p>
+          </div>
+          <div>
+            <span style="font-size: 0.775rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em;">Statutory Deadlines</span>
+            <p id="route-deadlines" style="margin-top: 0.25rem; font-size: 0.925rem;"></p>
+          </div>
+          <div>
+            <span style="font-size: 0.775rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em;">Editorial Review</span>
+            <p id="route-verified-info" style="margin-top: 0.25rem; font-size: 0.85rem; color: var(--text-muted);"></p>
+          </div>
+        </div>
+
+        <!-- Why this route explanation -->
+        <div style="margin-top: 1.25rem; padding: 1rem 1.25rem; background: #EFF6FF; border-left: 4px solid var(--secondary-blue); border-radius: 4px;">
+          <h4 style="font-size: 0.9rem; color: #1E40AF; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.25rem;">Why FixRoute Recommended This Route</h4>
+          <p id="route-reason" style="font-size: 0.925rem; color: #1E3A8A; line-height: 1.5;"></p>
+        </div>
+
+        <!-- Eligibility warning if present -->
+        <div id="route-eligibility-box" style="margin-top: 0.85rem; padding: 1rem 1.25rem; background: #FFFBEB; border-left: 4px solid var(--warning); border-radius: 4px; display: none;">
+          <h4 style="font-size: 0.9rem; color: #92400E; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.25rem;">Mandatory Prerequisite / Eligibility</h4>
+          <p id="route-eligibility" style="font-size: 0.925rem; color: #78350F; line-height: 1.5;"></p>
+        </div>
+      </div>
+
+      <!-- Two-column resolution workflow -->
+      <div style="display: grid; grid-template-columns: 1.6fr 1.2fr; gap: 2rem;">
+        
+        <!-- Left: Step-by-Step Resolution Guide -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 style="font-size: 1.4rem;">Step-by-Step Resolution Guide</h2>
+            <span id="steps-progress-badge" style="font-size: 0.85rem; color: var(--text-muted);"></span>
+          </div>
+
+          <div id="steps-container">
+            <!-- Step Items rendered dynamically -->
+          </div>
+
+          <!-- Official Portal Action -->
+          <div id="official-portal-banner" class="card" style="margin-top: 1.5rem; background: #14213D; color: white; display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+              <div>
+                <h4 style="color: white; margin-bottom: 0.25rem;">Ready to Lodge Your Complaint?</h4>
+                <p style="font-size: 0.875rem; color: #94A3B8;">Proceed to the official regulatory portal once evidence and draft are prepared.</p>
+              </div>
+              <a id="official-portal-link" href="#" target="_blank" rel="noopener" class="btn btn-teal btn-sm">
+                Open Official Portal &nearr;
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Interactive Evidence Checklist & Actions -->
+        <div>
+          <div style="position: sticky; top: 5.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Evidence Checklist Card -->
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <h3 style="font-size: 1.15rem;">Evidence Checklist</h3>
+                <span id="checklist-counter" style="font-size: 0.825rem; font-weight: 700; color: var(--secondary-blue);">0/0 Collected</span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Gather these documents before submitting your complaint to prevent rejection or delay.
+              </p>
+
+              <div id="checklist-items-wrap">
+                <!-- Checklist items injected dynamically -->
+              </div>
+
+              <!-- Add Custom Item Input -->
+              <div style="margin-top: 1rem; pt: 0.75rem; border-top: 1px solid var(--border-color); display: flex; gap: 0.5rem;">
+                <input type="text" id="custom-evidence-input" class="form-input" placeholder="Add custom item..." style="font-size: 0.85rem;">
+                <button type="button" class="btn btn-outline btn-sm" onclick="addCustomEvidence()">Add</button>
+              </div>
+            </div>
+
+            <!-- Complaint Generator CTA Card -->
+            <div class="card" style="background: linear-gradient(135deg, #EFF6FF, #F8FAFC); border-color: #BFDBFE;">
+              <h4 style="font-size: 1.1rem; color: var(--primary-navy); margin-bottom: 0.5rem;">Generate Formal Complaint</h4>
+              <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.5;">
+                Need to write to the Grievance Officer? Create a professional, factual complaint letter with your evidence cited automatically.
+              </p>
+              <button type="button" class="btn btn-primary" style="width: 100%;" onclick="launchComplaintGenerator()">
+                Draft Complaint Letter &rarr;
+              </button>
+            </div>
+
+            <!-- Verified Statutory Sources -->
+            <div class="card">
+              <h4 style="font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.75rem;">Verified Statutory Sources</h4>
+              <ul id="sources-list" style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.875rem;">
+                <!-- Populated dynamically -->
+              </ul>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Correction Report Modal -->
+  <div id="correction-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <button class="modal-close" onclick="closeCorrectionModal()">&times;</button>
+      <h3 class="modal-title">Report Route Correction or Broken Link</h3>
+      <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;">
+        Help maintain FixRoute's integrity. Reports are reviewed by our editorial team before updates are published.
+      </p>
+      <form id="correction-form" onsubmit="submitCorrectionReport(event)">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Issue Type</label>
+          <select id="corr-type" class="form-select" required>
+            <option value="broken_link">Broken Official URL / Portal Link</option>
+            <option value="outdated_info">Outdated Rules or Procedure</option>
+            <option value="incorrect_routing">Incorrect Authority or Jurisdiction</option>
+            <option value="missing_steps">Missing Resolution Step or Requirement</option>
+            <option value="other">Other Information Discrepancy</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Details of What is Inaccurate</label>
+          <textarea id="corr-details" class="form-textarea" rows="3" required placeholder="Describe what has changed or why this route needs updating..."></textarea>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Correct Official Source URL (Optional)</label>
+          <input type="url" id="corr-source" class="form-input" placeholder="https://...">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Your Email (Optional, for status updates)</label>
+          <input type="email" id="corr-email" class="form-input" placeholder="you@example.com">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Report for Verification</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+          <div class="brand-icon" style="width:28px; height:28px; font-size:0.95rem;">✓</div>
+          <span style="font-size:1.3rem; font-weight:800; color:white;">FIXROUTE</span>
+        </div>
+        <p>Tell us your problem. We'll tell you who can fix it.</p>
+        <p style="font-size: 0.825rem; color: #64748B;">Founder: Sreekar</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/search">Find a Solution</a></li>
+          <li><a href="/tracker">Complaint Tracker</a></li>
+          <li><a href="/complaint-generator">Draft a Complaint</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Integrity</h4>
+        <ul>
+          <li><a href="/about">About FixRoute</a></li>
+          <li><a href="/help">Help & Contact</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="/terms">Terms of Service</a></li>
+          <li><a href="/terms#disclaimer">Disclaimer</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>&copy; 2026 FixRoute. Built for India.</div>
+    </div>
+  </footer>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/nav.js"></script>
+  <script>
+    let currentRoute = null;
+    let completedSteps = new Set();
+    let collectedEvidence = new Set();
+    let customEvidenceList = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const idOrSlug = urlParams.get("id");
+      if (!idOrSlug) {
+        window.location.href = "/search";
+        return;
+      }
+      loadRoute(idOrSlug);
+    });
+
+    async function loadRoute(idOrSlug) {
+      try {
+        const route = await window.fixRoute.getRoute(idOrSlug);
+        currentRoute = route;
+        renderRoute(route);
+      } catch (err) {
+        document.getElementById("loading-state").innerHTML = `
+          <h3 style="color:var(--error); margin-bottom:0.5rem;">Could not load route</h3>
+          <p style="color:var(--text-muted); margin-bottom:1rem;">${escapeHTML(err.message)}</p>
+          <a href="/search" class="btn btn-outline btn-sm">&larr; Return to Search</a>
+        `;
+      }
+    }
+
+    function renderRoute(r) {
+      document.title = `${r.title} — FixRoute Guide`;
+      document.getElementById("loading-state").style.display = "none";
+      document.getElementById("content-area").style.display = "block";
+
+      document.getElementById("route-title").textContent = r.title;
+      document.getElementById("route-description").textContent = r.problem_description;
+      document.getElementById("route-category-badge").textContent = r.category_name || "General";
+      document.getElementById("route-jurisdiction-badge").textContent = `Jurisdiction: ${r.jurisdiction}`;
+      
+      const vBadge = document.getElementById("route-verification-badge");
+      if (r.verification_status === "verified") {
+        vBadge.className = "badge badge-verified";
+        vBadge.textContent = "✓ Verified Route";
+      } else {
+        vBadge.className = "badge badge-unverified";
+        vBadge.textContent = r.verification_status.toUpperCase();
+      }
+
+      document.getElementById("route-authority").textContent = `${r.responsible_authority} (${r.authority_type})`;
+      document.getElementById("route-channel").textContent = r.official_channel || "Official Grievance Cell";
+      document.getElementById("route-deadlines").textContent = r.relevant_deadlines || "Standard 30-day statutory TAT";
+      
+      const verifiedDate = r.last_verified_at ? new Date(r.last_verified_at).toLocaleDateString('en-IN', { month:'short', year:'numeric' }) : 'Recent';
+      document.getElementById("route-verified-info").textContent = `${verifiedDate} by ${r.verified_by || 'Editorial Team'}`;
+      document.getElementById("route-reason").textContent = r.reason_for_routing;
+
+      if (r.eligibility_conditions) {
+        document.getElementById("route-eligibility-box").style.display = "block";
+        document.getElementById("route-eligibility").textContent = r.eligibility_conditions;
+      }
+
+      if (r.official_portal_url) {
+        const portalBanner = document.getElementById("official-portal-banner");
+        const portalLink = document.getElementById("official-portal-link");
+        portalLink.href = r.official_portal_url;
+        portalBanner.style.display = "block";
+      }
+
+      // Restore saved progress from localStorage
+      loadSavedProgress(r.id);
+
+      // Render Steps
+      renderSteps(r.steps || []);
+
+      // Render Evidence
+      renderEvidence(r.evidence_items || []);
+
+      // Render Sources
+      renderSources(r.sources || []);
+    }
+
+    function loadSavedProgress(routeId) {
+      try {
+        const savedSteps = JSON.parse(localStorage.getItem(`fixroute_steps_${routeId}`) || "[]");
+        completedSteps = new Set(savedSteps);
+
+        const savedEv = JSON.parse(localStorage.getItem(`fixroute_ev_${routeId}`) || "[]");
+        collectedEvidence = new Set(savedEv);
+
+        customEvidenceList = JSON.parse(localStorage.getItem(`fixroute_custom_ev_${routeId}`) || "[]");
+      } catch (e) {}
+    }
+
+    function persistProgress() {
+      if (!currentRoute) return;
+      localStorage.setItem(`fixroute_steps_${currentRoute.id}`, JSON.stringify([...completedSteps]));
+      localStorage.setItem(`fixroute_ev_${currentRoute.id}`, JSON.stringify([...collectedEvidence]));
+      localStorage.setItem(`fixroute_custom_ev_${currentRoute.id}`, JSON.stringify(customEvidenceList));
+    }
+
+    function renderSteps(steps) {
+      const container = document.getElementById("steps-container");
+      const progressBadge = document.getElementById("steps-progress-badge");
+      progressBadge.textContent = `${completedSteps.size} of ${steps.length} Completed`;
+
+      if (steps.length === 0) {
+        container.innerHTML = `<p style="color:var(--text-muted);">Standard steps: First file with service provider, then escalate to regulatory ombudsman.</p>`;
+        return;
+      }
+
+      container.innerHTML = steps.map(step => {
+        const isDone = completedSteps.has(step.step_number);
+        return `
+          <div class="step-item" style="border-left: 4px solid ${isDone ? 'var(--success)' : 'var(--primary-navy)'};">
+            <div class="step-header">
+              <div class="step-num-badge ${isDone ? 'completed' : ''}">${isDone ? '✓' : step.step_number}</div>
+              <div style="flex-grow: 1;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem;">
+                  <h3 class="step-title" style="${isDone ? 'text-decoration:line-through; color:var(--text-muted);' : ''}">${escapeHTML(step.title)}</h3>
+                  <label style="display:flex; align-items:center; gap:0.35rem; font-size:0.825rem; cursor:pointer; user-select:none;">
+                    <input type="checkbox" class="checklist-checkbox" ${isDone ? 'checked' : ''} onchange="toggleStepCompleted(${step.step_number}, this.checked)">
+                    <span style="font-weight:600; color:${isDone ? 'var(--success)' : 'var(--text-muted)'};">${isDone ? 'Completed' : 'Mark Done'}</span>
+                  </label>
+                </div>
+                <p class="step-desc">${escapeHTML(step.description)}</p>
+
+                ${step.warnings ? `
+                  <div class="step-warning">
+                    <strong>Important Caution:</strong> ${escapeHTML(step.warnings)}
+                  </div>
+                ` : ''}
+
+                ${step.official_url ? `
+                  <div style="margin-top:0.75rem;">
+                    <a href="${step.official_url}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="font-size:0.8rem;">
+                      Visit Official Portal / Resource &rarr;
+                    </a>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleStepCompleted(stepNum, isChecked) {
+      if (isChecked) {
+        completedSteps.add(stepNum);
+      } else {
+        completedSteps.delete(stepNum);
+      }
+      persistProgress();
+      renderSteps(currentRoute.steps || []);
+    }
+
+    function renderEvidence(items) {
+      const wrap = document.getElementById("checklist-items-wrap");
+      const counter = document.getElementById("checklist-counter");
+
+      const allItems = [...items, ...customEvidenceList.map((c, i) => ({
+        id: `custom_${i}`,
+        title: c,
+        why_needed: "Custom supporting evidence added by you",
+        is_mandatory: false
+      }))];
+
+      const collectedCount = allItems.filter(item => collectedEvidence.has(item.title)).length;
+      counter.textContent = `${collectedCount}/${allItems.length} Collected`;
+
+      wrap.innerHTML = allItems.map((item, idx) => {
+        const isCollected = collectedEvidence.has(item.title);
+        return `
+          <div class="checklist-item">
+            <input type="checkbox" id="ev_chk_${idx}" class="checklist-checkbox" ${isCollected ? 'checked' : ''} onchange="toggleEvidenceItem('${escapeHTML(item.title)}', this.checked)">
+            <div style="flex-grow: 1;">
+              <label for="ev_chk_${idx}" class="checklist-label" style="${isCollected ? 'text-decoration:line-through; color:var(--text-muted);' : ''}">
+                ${escapeHTML(item.title)}
+                ${item.is_mandatory ? '<span style="color:var(--error); font-size:0.75rem; margin-left:0.25rem;">(Required)</span>' : ''}
+              </label>
+              <div class="checklist-reason">${escapeHTML(item.why_needed)}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleEvidenceItem(title, isChecked) {
+      if (isChecked) {
+        collectedEvidence.add(title);
+      } else {
+        collectedEvidence.delete(title);
+      }
+      persistProgress();
+      renderEvidence(currentRoute.evidence_items || []);
+    }
+
+    function addCustomEvidence() {
+      const input = document.getElementById("custom-evidence-input");
+      const val = input.value.trim();
+      if (!val) return;
+      customEvidenceList.push(val);
+      collectedEvidence.add(val);
+      input.value = "";
+      persistProgress();
+      renderEvidence(currentRoute.evidence_items || []);
+      showToast("Custom evidence item added to checklist.", "success");
+    }
+
+    function renderSources(sources) {
+      const list = document.getElementById("sources-list");
+      if (sources.length === 0) {
+        list.innerHTML = `<li>Official Government Gazette & Regulator Guidelines</li>`;
+        return;
+      }
+      list.innerHTML = sources.map(s => `
+        <li style="border-bottom:1px solid #F1F5F9; padding-bottom:0.5rem;">
+          <a href="${s.url}" target="_blank" rel="noopener" style="font-weight:600; color:var(--secondary-blue); display:inline-block; margin-bottom:0.15rem;">
+            ${escapeHTML(s.title)} &nearr;
+          </a>
+          <div style="font-size:0.775rem; color:var(--text-muted);">${escapeHTML(s.publisher)}</div>
+        </li>
+      `).join('');
+    }
+
+    async function toggleSaveCurrentRoute() {
+      if (!window.fixRoute.isAuthenticated()) {
+        openAuthModal("login");
+        showToast("Please sign in to save routes.", "info");
+        return;
+      }
+      const btn = document.getElementById("save-route-btn");
+      try {
+        btn.textContent = "Saving...";
+        await window.fixRoute.saveRoute(currentRoute.id);
+        btn.textContent = "✓ Bookmarked";
+        showToast("Route saved to your dashboard!", "success");
+      } catch (err) {
+        btn.textContent = "Bookmark Route";
+        showToast(err.message, "error");
+      }
+    }
+
+    function launchComplaintGenerator() {
+      if (!currentRoute) return;
+      const params = new URLSearchParams();
+      params.append("route_id", currentRoute.id);
+      params.append("org", currentRoute.responsible_authority.split('&')[0].trim());
+      params.append("cat", currentRoute.category_name || "");
+      params.append("issue", currentRoute.title);
+      if (collectedEvidence.size > 0) {
+        params.append("evidence", [...collectedEvidence].join("||"));
+      }
+      window.location.href = `/complaint-generator?${params.toString()}`;
+    }
+
+    function openCorrectionModalForRoute() {
+      document.getElementById("correction-modal").classList.add("open");
+    }
+
+    function closeCorrectionModal() {
+      document.getElementById("correction-modal").classList.remove("open");
+    }
+
+    async function submitCorrectionReport(e) {
+      e.preventDefault();
+      if (!currentRoute) return;
+      const type = document.getElementById("corr-type").value;
+      const details = document.getElementById("corr-details").value.trim();
+      const source = document.getElementById("corr-source").value.trim();
+      const email = document.getElementById("corr-email").value.trim();
+
+      try {
+        await window.fixRoute.submitCorrection({
+          route_id: currentRoute.id,
+          issue_type: type,
+          details,
+          source_url_suggested: source || null,
+          contact_email: email || null
+        });
+        closeCorrectionModal();
+        showToast("Thank you! Your correction report has been submitted to the editorial review team.", "success");
+      } catch (err) {
+        showToast(err.message || "Failed to submit correction.", "error");
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal — FixRoute</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="/static/css/brand.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .stat-card {
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+    }
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary-navy);
+      margin-top: 0.25rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    th {
+      background-color: #F8FAFC;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">✓</div>
+        <span>FIXROUTE <small style="font-size:0.75rem; background:var(--primary-navy); color:white; padding:0.15rem 0.4rem; border-radius:4px; margin-left:0.35rem;">ADMIN</small></span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/" class="nav-link">Site Home</a></li>
+        <li><a href="/search" class="nav-link">Search</a></li>
+        <li><a href="/dashboard" class="nav-link">User Dashboard</a></li>
+      </ul>
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- Main Admin Container -->
+  <main class="container" style="max-width: 1200px;">
+    
+    <!-- Access Denied Banner if not admin -->
+    <div id="admin-forbidden-box" class="card" style="display:none; text-align:center; padding:4rem 1.5rem; border-color:#FECACA; background:#FEF2F2;">
+      <h2 style="color:#991B1B; margin-bottom:0.5rem;">Administrative Access Required</h2>
+      <p style="color:#7F1D1D; max-width:480px; margin:0 auto 1.5rem;">
+        You must be signed in with an administrator role to manage routing directories, source verifications, and audit logs.
+      </p>
+      <button class="btn btn-navy" onclick="openAuthModal('login')">Sign In as Administrator</button>
+    </div>
+
+    <!-- Authenticated Admin Content -->
+    <div id="admin-content-area" style="display: none;">
+      <div style="margin-bottom: 2rem;">
+        <h1 style="font-size: 1.85rem; color: var(--primary-navy); margin-bottom: 0.5rem;">Editorial & Routing Administration</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          Verify Indian statutory sources, review citizen correction alerts, and maintain directory integrity.
+        </p>
+      </div>
+
+      <!-- Stats Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div class="stat-card">
+          <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Total Users</span>
+          <div class="stat-number" id="stat-users">0</div>
+        </div>
+        <div class="stat-card">
+          <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Problem Routes</span>
+          <div class="stat-number" id="stat-routes">0</div>
+        </div>
+        <div class="stat-card">
+          <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Verified Routes</span>
+          <div class="stat-number" id="stat-verified" style="color: var(--success);">0</div>
+        </div>
+        <div class="stat-card">
+          <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Searches Handled</span>
+          <div class="stat-number" id="stat-searches">0</div>
+        </div>
+        <div class="stat-card">
+          <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Tracked Complaints</span>
+          <div class="stat-number" id="stat-complaints">0</div>
+        </div>
+        <div class="stat-card">
+          <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Pending Corrections</span>
+          <div class="stat-number" id="stat-corrections" style="color: var(--warning);">0</div>
+        </div>
+      </div>
+
+      <!-- Section: Routing Records Table -->
+      <div class="card" style="margin-bottom: 2rem; overflow-x: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.25rem; color: var(--primary-navy);">Approved Problem Routes & Sources</h3>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Real-time Database Status</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Route Title</th>
+              <th>Category</th>
+              <th>Responsible Authority</th>
+              <th>Status</th>
+              <th>Last Checked</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="admin-routes-tbody">
+            <tr><td colspan="7" style="text-align:center;">Loading routes...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Section: User Correction Reports Queue -->
+      <div class="card" style="margin-bottom: 2rem; overflow-x: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.25rem; color: var(--primary-navy);">Citizen Correction & Broken Link Reports</h3>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Community Feedback Queue</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Route ID</th>
+              <th>Issue Type</th>
+              <th>Details</th>
+              <th>Suggested Link</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="admin-corrections-tbody">
+            <tr><td colspan="7" style="text-align:center;">Loading correction reports...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Section: Audit Log Feed -->
+      <div class="card">
+        <h3 style="font-size: 1.25rem; color: var(--primary-navy); margin-bottom: 1rem;">Administrative Audit Trail</h3>
+        <div id="admin-audit-logs" style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+          <p style="color: var(--text-muted);">Loading audit events...</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/nav.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      checkAdminAccess();
+      window.addEventListener("fixroute:auth-change", checkAdminAccess);
+    });
+
+    function checkAdminAccess() {
+      const forbiddenBox = document.getElementById("admin-forbidden-box");
+      const contentArea = document.getElementById("admin-content-area");
+
+      if (!window.fixRoute.isAdmin()) {
+        forbiddenBox.style.display = "block";
+        contentArea.style.display = "none";
+        return;
+      }
+
+      forbiddenBox.style.display = "none";
+      contentArea.style.display = "block";
+
+      loadDashboardData();
+    }
+
+    async function loadDashboardData() {
+      try {
+        const stats = await window.fixRoute.getAdminStats();
+        document.getElementById("stat-users").textContent = stats.total_users;
+        document.getElementById("stat-routes").textContent = stats.total_routes;
+        document.getElementById("stat-verified").textContent = stats.verified_routes;
+        document.getElementById("stat-searches").textContent = stats.total_searches;
+        document.getElementById("stat-complaints").textContent = stats.total_complaints;
+        document.getElementById("stat-corrections").textContent = stats.pending_corrections;
+
+        loadRoutesTable();
+        loadCorrectionsTable();
+        loadAuditLogs();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    async function loadRoutesTable() {
+      const tbody = document.getElementById("admin-routes-tbody");
+      try {
+        const routes = await window.fixRoute.getAdminRoutes();
+        tbody.innerHTML = routes.map(r => `
+          <tr>
+            <td><strong>#${r.id}</strong></td>
+            <td><a href="/route-detail?id=${r.slug}" target="_blank" style="font-weight:600;">${escapeHTML(r.title)}</a></td>
+            <td>${escapeHTML(r.category_name)}</td>
+            <td>${escapeHTML(r.responsible_authority)}</td>
+            <td>
+              <span class="badge ${r.verification_status === 'verified' ? 'badge-verified' : 'badge-unverified'}">
+                ${r.verification_status}
+              </span>
+            </td>
+            <td>${r.last_verified_at ? new Date(r.last_verified_at).toLocaleDateString('en-IN') : 'Recent'}</td>
+            <td>
+              <select class="form-select" style="padding:0.25rem 0.5rem; font-size:0.8rem;" onchange="updateVerification(${r.id}, this.value)">
+                <option value="verified" ${r.verification_status === 'verified' ? 'selected' : ''}>Verified</option>
+                <option value="unverified" ${r.verification_status === 'unverified' ? 'selected' : ''}>Unverified</option>
+                <option value="outdated" ${r.verification_status === 'outdated' ? 'selected' : ''}>Outdated</option>
+                <option value="disputed" ${r.verification_status === 'disputed' ? 'selected' : ''}>Disputed</option>
+              </select>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" style="color:var(--error);">${escapeHTML(err.message)}</td></tr>`;
+      }
+    }
+
+    async function updateVerification(id, newStatus) {
+      try {
+        await window.fixRoute.updateRouteVerification(id, newStatus);
+        showToast(`Route #${id} status updated to ${newStatus}.`, "success");
+        loadDashboardData();
+      } catch (err) {
+        showToast(err.message || "Failed to update status", "error");
+      }
+    }
+
+    async function loadCorrectionsTable() {
+      const tbody = document.getElementById("admin-corrections-tbody");
+      try {
+        const corrections = await window.fixRoute.getAdminCorrections();
+        if (corrections.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">No pending user correction reports.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = corrections.map(c => `
+          <tr>
+            <td><strong>#${c.id}</strong></td>
+            <td><a href="/route-detail?id=${c.route_id}" target="_blank">Route #${c.route_id}</a></td>
+            <td><span class="badge" style="background:#F1F5F9;">${escapeHTML(c.issue_type)}</span></td>
+            <td>${escapeHTML(c.details)}</td>
+            <td>${c.source_url_suggested ? `<a href="${c.source_url_suggested}" target="_blank">Link &nearr;</a>` : '—'}</td>
+            <td><strong>${escapeHTML(c.status)}</strong></td>
+            <td>
+              ${c.status === 'pending' ? `
+                <button class="btn btn-outline btn-sm" style="font-size:0.75rem; padding:0.2rem 0.5rem;" onclick="resolveCorrection(${c.id}, 'resolved')">Resolve</button>
+                <button class="btn btn-outline btn-sm" style="font-size:0.75rem; padding:0.2rem 0.5rem; color:var(--error);" onclick="resolveCorrection(${c.id}, 'rejected')">Dismiss</button>
+              ` : '<span style="color:var(--text-muted);">Completed</span>'}
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" style="color:var(--error);">${escapeHTML(err.message)}</td></tr>`;
+      }
+    }
+
+    async function resolveCorrection(id, status) {
+      try {
+        await window.fixRoute.updateAdminCorrection(id, { status, admin_notes: `Processed by admin as ${status}` });
+        showToast(`Correction report #${id} marked as ${status}.`, "success");
+        loadDashboardData();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    async function loadAuditLogs() {
+      const container = document.getElementById("admin-audit-logs");
+      try {
+        const logs = await window.fixRoute.getAdminAuditLogs();
+        if (logs.length === 0) {
+          container.innerHTML = `<p style="color:var(--text-muted);">No administrative events logged.</p>`;
+          return;
+        }
+
+        container.innerHTML = logs.map(l => `
+          <div style="background:#F8FAFC; padding:0.5rem 0.75rem; border-radius:var(--radius-sm); border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong>${escapeHTML(l.action)}</strong> &bull; <span style="color:#475569;">${escapeHTML(l.details || '')}</span>
+            </div>
+            <span style="font-size:0.75rem; color:var(--text-muted);">${new Date(l.created_at).toLocaleString('en-IN')}</span>
+          </div>
+        `).join('');
+      } catch (err) {
+        container.innerHTML = `<p style="color:var(--error);">${escapeHTML(err.message)}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>

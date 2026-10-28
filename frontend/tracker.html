@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complaint Tracker — FixRoute</title>
+  <meta name="description" content="Organize, monitor, and manage your everyday complaints, submission reference numbers, and follow-up deadlines in India.">
+  <link rel="stylesheet" href="/static/css/brand.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">✓</div>
+        <span>FIXROUTE</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/" class="nav-link">Home</a></li>
+        <li><a href="/search" class="nav-link">Find a Solution</a></li>
+        <li><a href="/tracker" class="nav-link active">Track Complaint</a></li>
+        <li><a href="/complaint-generator" class="nav-link">Draft Complaint</a></li>
+        <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+      </ul>
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- Tracker Main -->
+  <main class="container" style="max-width: 1140px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+      <div>
+        <h1 style="font-size: 1.85rem; margin-bottom: 0.5rem;">Complaint Progress Tracker</h1>
+        <p style="color: var(--text-muted); font-size: 0.975rem;">
+          Keep tabs on your reference numbers, follow-up milestones, and statutory deadlines in one central place.
+        </p>
+      </div>
+      <button class="btn btn-primary" onclick="openNewComplaintModal()">
+        + Log New Complaint
+      </button>
+    </div>
+
+    <!-- Integrity Disclaimer Banner -->
+    <div class="alert alert-info" style="font-size: 0.85rem; margin-bottom: 1.5rem;">
+      <span>ℹ️</span>
+      <div>
+        <strong>Integrity Notice:</strong> Statuses displayed in this tracker represent your personal administrative notes and chronological timeline. They do not claim live integration with external government or bank portals. Always verify directly through the official tracking link provided.
+      </div>
+    </div>
+
+    <!-- Filters and Search Toolbar -->
+    <div class="card" style="padding: 1.25rem; margin-bottom: 1.5rem;">
+      <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0.75rem;">
+        <input type="text" id="tracker-search-input" class="form-input" placeholder="Search by organization, title, or reference number..." oninput="debounceFilter()">
+        <select id="tracker-status-filter" class="form-select" onchange="filterComplaints()">
+          <option value="">All Statuses</option>
+          <option value="Draft">Draft</option>
+          <option value="Ready to submit">Ready to submit</option>
+          <option value="Submitted">Submitted</option>
+          <option value="Acknowledgement received">Acknowledgement received</option>
+          <option value="In progress">In progress</option>
+          <option value="Additional information requested">Additional info requested</option>
+          <option value="Resolved">Resolved</option>
+          <option value="Closed">Closed</option>
+          <option value="Escalation considered">Escalation considered</option>
+        </select>
+        <button type="button" class="btn btn-outline" onclick="resetFilters()">Reset Filters</button>
+      </div>
+    </div>
+
+    <!-- Complaints List Container -->
+    <div id="complaints-container" style="display: flex; flex-direction: column; gap: 1rem;">
+      <div class="card" style="text-align: center; padding: 3rem;">
+        <p style="color: var(--text-muted);">Loading your tracked complaints...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Log New Complaint -->
+  <div id="new-complaint-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <button class="modal-close" onclick="closeNewComplaintModal()">&times;</button>
+      <h3 class="modal-title">Log a New Complaint</h3>
+      <form id="new-complaint-form" onsubmit="handleCreateComplaint(event)">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Complaint Title / Summary</label>
+          <input type="text" id="comp-title" class="form-input" required placeholder="e.g. Failed UPI Transaction Refund">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Category</label>
+            <select id="comp-category" class="form-select" required>
+              <option value="Banking and Payments">Banking and Payments</option>
+              <option value="Electricity and Water">Electricity and Water</option>
+              <option value="College and University">College and University</option>
+              <option value="Internet and Telecom">Internet and Telecom</option>
+              <option value="Consumer Complaints">Consumer Complaints</option>
+              <option value="Housing and Rental">Housing and Rental</option>
+              <option value="Workplace Problems">Workplace Problems</option>
+              <option value="Government Services">Government Services</option>
+              <option value="Transport & Public">Transport & Public</option>
+              <option value="Cyber Crime & Fraud">Cyber Crime & Fraud</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Organization</label>
+            <input type="text" id="comp-org" class="form-input" required placeholder="e.g. State Bank of India">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Complaint / Ticket Ref ID</label>
+            <input type="text" id="comp-ref" class="form-input" placeholder="e.g. SBI-2026-9912">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Status</label>
+            <select id="comp-status" class="form-select">
+              <option value="Submitted">Submitted</option>
+              <option value="Draft">Draft</option>
+              <option value="Ready to submit">Ready to submit</option>
+              <option value="Acknowledgement received">Acknowledgement received</option>
+              <option value="In progress">In progress</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Official Portal Tracking URL (Optional)</label>
+          <input type="url" id="comp-url" class="form-input" placeholder="https://cms.rbi.org.in">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Notes & Follow-up Details</label>
+          <textarea id="comp-notes" class="form-textarea" rows="3" placeholder="Enter notes from customer care or next action date..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Save to Tracker</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Update Status & Timeline -->
+  <div id="update-status-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <button class="modal-close" onclick="closeUpdateStatusModal()">&times;</button>
+      <h3 class="modal-title">Update Complaint Status</h3>
+      <form id="update-status-form" onsubmit="handleUpdateStatusSubmit(event)">
+        <input type="hidden" id="update-comp-id">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">New Status</label>
+          <select id="update-status-select" class="form-select" required>
+            <option value="Submitted">Submitted</option>
+            <option value="Acknowledgement received">Acknowledgement received</option>
+            <option value="In progress">In progress</option>
+            <option value="Additional information requested">Additional information requested</option>
+            <option value="Resolved">Resolved</option>
+            <option value="Closed">Closed</option>
+            <option value="Escalation considered">Escalation considered</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Timeline Notes / What Happened</label>
+          <textarea id="update-notes-input" class="form-textarea" rows="3" required placeholder="e.g. Received email response from Nodal Officer stating investigation will complete by Friday..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Record Update in Timeline</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+          <div class="brand-icon" style="width:28px; height:28px; font-size:0.95rem;">✓</div>
+          <span style="font-size:1.3rem; font-weight:800; color:white;">FIXROUTE</span>
+        </div>
+        <p>Tell us your problem. We'll tell you who can fix it.</p>
+        <p style="font-size: 0.825rem; color: #64748B;">Founder: Sreekar</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/search">Find a Solution</a></li>
+          <li><a href="/dashboard">Dashboard</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Trust</h4>
+        <ul>
+          <li><a href="/about">About FixRoute</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>&copy; 2026 FixRoute. Built for India.</div>
+    </div>
+  </footer>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/nav.js"></script>
+  <script>
+    let complaintsList = [];
+    let debounceTimer = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Check query params if directed from generator
+      const urlParams = new URLSearchParams(window.location.search);
+      const preTitle = urlParams.get("title");
+      const preOrg = urlParams.get("org");
+      const preRef = urlParams.get("ref");
+
+      if (preTitle || preOrg) {
+        openNewComplaintModal();
+        if (preTitle) document.getElementById("comp-title").value = preTitle;
+        if (preOrg) document.getElementById("comp-org").value = preOrg;
+        if (preRef) document.getElementById("comp-ref").value = preRef;
+      }
+
+      loadComplaints();
+    });
+
+    async function loadComplaints() {
+      const container = document.getElementById("complaints-container");
+      
+      if (!window.fixRoute.isAuthenticated()) {
+        // Load local guest complaints from localStorage
+        const local = JSON.parse(localStorage.getItem("fixroute_guest_complaints") || "[]");
+        complaintsList = local;
+        renderComplaints(local, true);
+        return;
+      }
+
+      try {
+        const data = await window.fixRoute.getComplaints();
+        complaintsList = data;
+        renderComplaints(data, false);
+      } catch (err) {
+        container.innerHTML = `<div class="alert alert-danger">${escapeHTML(err.message)}</div>`;
+      }
+    }
+
+    function renderComplaints(list, isGuest = false) {
+      const container = document.getElementById("complaints-container");
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="card" style="text-align: center; padding: 4rem 1.5rem;">
+            <div style="font-size:2.5rem; margin-bottom:1rem;">📂</div>
+            <h3 style="font-size: 1.25rem; color: var(--primary-navy); margin-bottom: 0.5rem;">No Tracked Complaints Yet</h3>
+            <p style="color: var(--text-muted); max-width: 480px; margin: 0 auto 1.5rem; font-size: 0.95rem;">
+              When you submit a grievance to a bank, Discom, college, or service provider, log it here to track its reference number, turnaround dates, and resolution steps.
+            </p>
+            <button class="btn btn-primary" onclick="openNewComplaintModal()">Log First Complaint</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(c => {
+        const statusClass = `status-${c.status.toLowerCase().replace(/\s+/g, '-')}`;
+        return `
+          <div class="card" style="border-left: 4px solid var(--secondary-blue);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.75rem; margin-bottom:0.75rem;">
+              <div>
+                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.35rem; flex-wrap:wrap;">
+                  <span class="badge ${statusClass}">${escapeHTML(c.status)}</span>
+                  <span class="badge badge-category">${escapeHTML(c.category_name)}</span>
+                  <span style="font-size:0.8rem; color:var(--text-muted); font-weight:600;">Org: ${escapeHTML(c.organization_name)}</span>
+                </div>
+                <h3 style="font-size:1.2rem; color:var(--primary-navy);">${escapeHTML(c.title)}</h3>
+              </div>
+
+              <div style="display:flex; gap:0.5rem;">
+                <button type="button" class="btn btn-outline btn-sm" onclick="openUpdateStatusModal(${c.id})">
+                  Update Status
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" style="color:var(--error);" onclick="handleDeleteComplaint(${c.id})">
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; background:#F8FAFC; padding:1rem; border-radius:var(--radius-md); font-size:0.875rem; margin-bottom:0.75rem;">
+              <div>
+                <span style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; font-weight:700;">Reference Number</span>
+                <p style="font-weight:700; color:var(--primary-navy);">${escapeHTML(c.reference_number || 'Not provided')}</p>
+              </div>
+              <div>
+                <span style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; font-weight:700;">Submission Date</span>
+                <p>${c.submission_date ? new Date(c.submission_date).toLocaleDateString('en-IN') : 'Recent'}</p>
+              </div>
+              <div>
+                <span style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; font-weight:700;">Official Portal</span>
+                <p>${c.official_tracking_url ? `<a href="${c.official_tracking_url}" target="_blank" rel="noopener">Track on Portal &nearr;</a>` : 'Manual tracking'}</p>
+              </div>
+            </div>
+
+            ${c.notes ? `<p style="font-size:0.875rem; color:#334155; margin-bottom:0.75rem;"><strong>Notes:</strong> ${escapeHTML(c.notes)}</p>` : ''}
+
+            <!-- Timeline Dropdown -->
+            ${c.timeline && c.timeline.length > 0 ? `
+              <details style="font-size:0.85rem; border-top:1px solid var(--border-color); padding-top:0.5rem; margin-top:0.5rem;">
+                <summary style="cursor:pointer; color:var(--secondary-blue); font-weight:600;">
+                  View Timeline History (${c.timeline.length} updates)
+                </summary>
+                <div style="margin-top:0.75rem; display:flex; flex-direction:column; gap:0.5rem; padding-left:0.5rem; border-left:2px solid #CBD5E1;">
+                  ${c.timeline.map(t => `
+                    <div style="margin-bottom:0.25rem;">
+                      <span style="font-size:0.75rem; color:var(--text-muted);">${new Date(t.event_date).toLocaleString('en-IN')} &bull; <strong>${escapeHTML(t.status)}</strong></span>
+                      <p style="color:#1E293B;">${escapeHTML(t.notes)}</p>
+                    </div>
+                  `).join('')}
+                </div>
+              </details>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openNewComplaintModal() {
+      document.getElementById("new-complaint-modal").classList.add("open");
+    }
+
+    function closeNewComplaintModal() {
+      document.getElementById("new-complaint-modal").classList.remove("open");
+    }
+
+    async function handleCreateComplaint(e) {
+      e.preventDefault();
+      const title = document.getElementById("comp-title").value.trim();
+      const category = document.getElementById("comp-category").value;
+      const org = document.getElementById("comp-org").value.trim();
+      const ref = document.getElementById("comp-ref").value.trim();
+      const status = document.getElementById("comp-status").value;
+      const url = document.getElementById("comp-url").value.trim();
+      const notes = document.getElementById("comp-notes").value.trim();
+
+      const payload = {
+        title,
+        category_name: category,
+        organization_name: org,
+        reference_number: ref || null,
+        status,
+        official_tracking_url: url || null,
+        notes: notes || null
+      };
+
+      if (!window.fixRoute.isAuthenticated()) {
+        // Save locally for guest
+        const local = JSON.parse(localStorage.getItem("fixroute_guest_complaints") || "[]");
+        const newLocal = {
+          id: Date.now(),
+          ...payload,
+          submission_date: new Date().toISOString(),
+          timeline: [{
+            status,
+            notes: "Initial record created in local guest mode.",
+            event_date: new Date().toISOString()
+          }]
+        };
+        local.unshift(newLocal);
+        localStorage.setItem("fixroute_guest_complaints", JSON.stringify(local));
+        closeNewComplaintModal();
+        showToast("Complaint saved locally (Guest mode). Sign in to sync online.", "success");
+        loadComplaints();
+        return;
+      }
+
+      try {
+        await window.fixRoute.createComplaint(payload);
+        closeNewComplaintModal();
+        showToast("Complaint tracked successfully!", "success");
+        loadComplaints();
+      } catch (err) {
+        showToast(err.message || "Failed to save complaint", "error");
+      }
+    }
+
+    function openUpdateStatusModal(id) {
+      document.getElementById("update-comp-id").value = id;
+      document.getElementById("update-status-modal").classList.add("open");
+    }
+
+    function closeUpdateStatusModal() {
+      document.getElementById("update-status-modal").classList.remove("open");
+    }
+
+    async function handleUpdateStatusSubmit(e) {
+      e.preventDefault();
+      const compId = document.getElementById("update-comp-id").value;
+      const newStatus = document.getElementById("update-status-select").value;
+      const notes = document.getElementById("update-notes-input").value.trim();
+
+      if (!window.fixRoute.isAuthenticated()) {
+        const local = JSON.parse(localStorage.getItem("fixroute_guest_complaints") || "[]");
+        const item = local.find(x => x.id == compId);
+        if (item) {
+          item.status = newStatus;
+          item.timeline = item.timeline || [];
+          item.timeline.unshift({
+            status: newStatus,
+            notes,
+            event_date: new Date().toISOString()
+          });
+          localStorage.setItem("fixroute_guest_complaints", JSON.stringify(local));
+        }
+        closeUpdateStatusModal();
+        showToast("Status updated.", "success");
+        loadComplaints();
+        return;
+      }
+
+      try {
+        await window.fixRoute.updateComplaint(compId, {
+          status: newStatus,
+          status_change_notes: notes
+        });
+        closeUpdateStatusModal();
+        showToast("Status and timeline updated successfully!", "success");
+        loadComplaints();
+      } catch (err) {
+        showToast(err.message || "Failed to update status", "error");
+      }
+    }
+
+    async function handleDeleteComplaint(id) {
+      if (!confirm("Are you sure you want to delete this complaint record?")) return;
+
+      if (!window.fixRoute.isAuthenticated()) {
+        let local = JSON.parse(localStorage.getItem("fixroute_guest_complaints") || "[]");
+        local = local.filter(x => x.id != id);
+        localStorage.setItem("fixroute_guest_complaints", JSON.stringify(local));
+        showToast("Complaint removed.", "info");
+        loadComplaints();
+        return;
+      }
+
+      try {
+        await window.fixRoute.deleteComplaint(id);
+        showToast("Complaint record deleted.", "success");
+        loadComplaints();
+      } catch (err) {
+        showToast(err.message || "Failed to delete", "error");
+      }
+    }
+
+    function debounceFilter() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(filterComplaints, 250);
+    }
+
+    function filterComplaints() {
+      const q = document.getElementById("tracker-search-input").value.trim().toLowerCase();
+      const status = document.getElementById("tracker-status-filter").value;
+
+      let filtered = complaintsList;
+      if (status) {
+        filtered = filtered.filter(c => c.status === status);
+      }
+      if (q) {
+        filtered = filtered.filter(c => 
+          (c.title && c.title.toLowerCase().includes(q)) ||
+          (c.organization_name && c.organization_name.toLowerCase().includes(q)) ||
+          (c.reference_number && c.reference_number.toLowerCase().includes(q))
+        );
+      }
+      renderComplaints(filtered);
+    }
+
+    function resetFilters() {
+      document.getElementById("tracker-search-input").value = "";
+      document.getElementById("tracker-status-filter").value = "";
+      renderComplaints(complaintsList);
+    }
+  </script>
+</body>
+</html>

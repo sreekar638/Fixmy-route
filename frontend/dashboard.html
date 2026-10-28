@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard — FixRoute</title>
+  <link rel="stylesheet" href="/static/css/brand.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .dash-nav-item {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-dark);
+      transition: background var(--transition-fast);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .dash-nav-item:hover, .dash-nav-item.active {
+      background-color: #EFF6FF;
+      color: var(--secondary-blue);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">✓</div>
+        <span>FIXROUTE</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/" class="nav-link">Home</a></li>
+        <li><a href="/search" class="nav-link">Find a Solution</a></li>
+        <li><a href="/tracker" class="nav-link">Track Complaint</a></li>
+        <li><a href="/complaint-generator" class="nav-link">Draft Complaint</a></li>
+        <li><a href="/dashboard" class="nav-link active">Dashboard</a></li>
+      </ul>
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- Dashboard Container -->
+  <main class="container" style="max-width: 1140px;">
+    
+    <!-- Guest Prompt if not authenticated -->
+    <div id="guest-guard-box" class="card" style="display:none; text-align:center; padding:3rem 1.5rem; margin-bottom:2rem;">
+      <h2 style="margin-bottom:0.5rem; color:var(--primary-navy);">Sign In to View Your Private Dashboard</h2>
+      <p style="color:var(--text-muted); max-width:480px; margin:0 auto 1.5rem;">
+        Your personal dashboard safely stores saved problem routes, draft complaint letters, and tracked dispute records.
+      </p>
+      <button class="btn btn-primary" onclick="openAuthModal('login')">Sign In</button>
+      <button class="btn btn-outline" onclick="openAuthModal('register')" style="margin-left:0.5rem;">Create Free Account</button>
+    </div>
+
+    <!-- Authenticated Dashboard View -->
+    <div id="authenticated-view" style="display:none;">
+      
+      <!-- Welcome Header -->
+      <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
+        <h1 style="font-size: 1.85rem; color: var(--primary-navy);" id="user-greeting">Welcome, Citizen</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;" id="user-email-display"></p>
+      </div>
+
+      <!-- Dashboard Layout: Sidebar + Tab Content -->
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 2rem; align-items: start;">
+        
+        <!-- Sidebar Navigation -->
+        <div class="card" style="padding: 0.75rem;">
+          <div class="dash-nav-item active" onclick="switchTab('saved-routes', this)">
+            📑 Saved Routes
+          </div>
+          <div class="dash-nav-item" onclick="switchTab('complaints-tab', this)">
+            🎯 Tracked Complaints
+          </div>
+          <div class="dash-nav-item" onclick="switchTab('drafts-tab', this)">
+            📝 Complaint Drafts
+          </div>
+          <div class="dash-nav-item" onclick="switchTab('history-tab', this)">
+            🕒 Search History
+          </div>
+          <div class="dash-nav-item" onclick="switchTab('settings-tab', this)">
+            ⚙️ Account Settings
+          </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div id="tab-content-area">
+          
+          <!-- Tab 1: Saved Routes -->
+          <div id="tab-saved-routes">
+            <h2 style="font-size: 1.35rem; margin-bottom: 1rem;">Saved Problem Routes</h2>
+            <div id="saved-routes-list" style="display: flex; flex-direction: column; gap: 1rem;">
+              <p style="color: var(--text-muted);">Loading saved routes...</p>
+            </div>
+          </div>
+
+          <!-- Tab 2: Tracked Complaints -->
+          <div id="tab-complaints-tab" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h2 style="font-size: 1.35rem;">Tracked Complaints</h2>
+              <a href="/tracker" class="btn btn-primary btn-sm">Open Full Tracker &rarr;</a>
+            </div>
+            <div id="dashboard-complaints-list" style="display: flex; flex-direction: column; gap: 1rem;">
+              <p style="color: var(--text-muted);">Loading complaints...</p>
+            </div>
+          </div>
+
+          <!-- Tab 3: Complaint Drafts -->
+          <div id="tab-drafts-tab" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h2 style="font-size: 1.35rem;">Saved Complaint Drafts</h2>
+              <a href="/complaint-generator" class="btn btn-outline btn-sm">+ Draft New</a>
+            </div>
+            <div id="drafts-list" style="display: flex; flex-direction: column; gap: 1rem;">
+              <p style="color: var(--text-muted);">Loading drafts...</p>
+            </div>
+          </div>
+
+          <!-- Tab 4: Search History -->
+          <div id="tab-history-tab" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h2 style="font-size: 1.35rem;">Recent Problem Searches</h2>
+              <button class="btn btn-outline btn-sm" style="color: var(--error);" onclick="clearSearchHistory()">
+                Clear Search History
+              </button>
+            </div>
+            <div id="search-history-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <p style="color: var(--text-muted);">Loading search history...</p>
+            </div>
+          </div>
+
+          <!-- Tab 5: Account Settings -->
+          <div id="tab-settings-tab" style="display: none;">
+            <h2 style="font-size: 1.35rem; margin-bottom: 1.25rem;">Account & Security Settings</h2>
+            
+            <!-- Change Password -->
+            <div class="card" style="margin-bottom: 1.5rem; padding: 1.5rem;">
+              <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Change Password</h3>
+              <form id="change-pwd-form" onsubmit="handleChangePassword(event)">
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Current Password</label>
+                  <input type="password" id="old-pwd" class="form-input" required style="max-width: 380px;">
+                </div>
+                <div style="margin-bottom: 1.25rem;">
+                  <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">New Password (min. 8 characters)</label>
+                  <input type="password" id="new-pwd" class="form-input" required minlength="8" style="max-width: 380px;">
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">Update Password</button>
+              </form>
+            </div>
+
+            <!-- Danger Zone / Delete Account -->
+            <div class="card" style="border: 1px solid #FECACA; background: #FEF2F2; padding: 1.5rem;">
+              <h3 style="font-size: 1.1rem; color: #991B1B; margin-bottom: 0.5rem;">Delete Account & All Data</h3>
+              <p style="font-size: 0.875rem; color: #7F1D1D; margin-bottom: 1rem; line-height: 1.6;">
+                Permanently delete your FixRoute account. All saved problem routes, complaint drafts, and tracked dispute records will be erased immediately. This action cannot be undone.
+              </p>
+              <button type="button" class="btn btn-outline btn-sm" style="background: white; border-color: #EF4444; color: #EF4444;" onclick="handleDeleteAccount()">
+                Delete My Account
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+          <div class="brand-icon" style="width:28px; height:28px; font-size:0.95rem;">✓</div>
+          <span style="font-size:1.3rem; font-weight:800; color:white;">FIXROUTE</span>
+        </div>
+        <p>Tell us your problem. We'll tell you who can fix it.</p>
+        <p style="font-size: 0.825rem; color: #64748B;">Founder: Sreekar</p>
+      </div>
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/search">Find a Solution</a></li>
+          <li><a href="/tracker">Track Complaint</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Trust & Legal</h4>
+        <ul>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>&copy; 2026 FixRoute. Built for India.</div>
+    </div>
+  </footer>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/nav.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      checkAuthAndInit();
+      window.addEventListener("fixroute:auth-change", checkAuthAndInit);
+    });
+
+    function checkAuthAndInit() {
+      const guardBox = document.getElementById("guest-guard-box");
+      const authView = document.getElementById("authenticated-view");
+
+      if (!window.fixRoute.isAuthenticated()) {
+        guardBox.style.display = "block";
+        authView.style.display = "none";
+        return;
+      }
+
+      guardBox.style.display = "none";
+      authView.style.display = "block";
+
+      const user = window.fixRoute.user;
+      if (user) {
+        document.getElementById("user-greeting").textContent = `Welcome, ${user.full_name}`;
+        document.getElementById("user-email-display").textContent = `${user.email} &bull; FixRoute Citizen Account`;
+      }
+
+      loadSavedRoutes();
+    }
+
+    function switchTab(tabId, tabEl) {
+      document.querySelectorAll(".dash-nav-item").forEach(el => el.classList.remove("active"));
+      tabEl.classList.add("active");
+
+      document.querySelectorAll("#tab-content-area > div").forEach(div => div.style.display = "none");
+      document.getElementById(`tab-${tabId}`).style.display = "block";
+
+      if (tabId === 'saved-routes') loadSavedRoutes();
+      if (tabId === 'complaints-tab') loadDashboardComplaints();
+      if (tabId === 'drafts-tab') loadDrafts();
+      if (tabId === 'history-tab') loadSearchHistory();
+    }
+
+    async function loadSavedRoutes() {
+      const list = document.getElementById("saved-routes-list");
+      try {
+        const saved = await window.fixRoute.getSavedRoutes();
+        if (saved.length === 0) {
+          list.innerHTML = `
+            <div class="card" style="text-align:center; padding:3rem; color:var(--text-muted);">
+              <p>You haven't bookmarked any problem routes yet.</p>
+              <a href="/search" class="btn btn-outline btn-sm" style="margin-top:0.75rem;">Find a Solution</a>
+            </div>
+          `;
+          return;
+        }
+
+        list.innerHTML = saved.map(s => `
+          <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+            <div>
+              <span class="badge badge-category" style="margin-bottom:0.25rem;">${escapeHTML(s.category_name)}</span>
+              <h4 style="font-size:1.15rem; color:var(--primary-navy); margin-top:0.25rem;">${escapeHTML(s.route_title)}</h4>
+              <p style="font-size:0.85rem; color:var(--text-muted);">Authority: ${escapeHTML(s.responsible_authority)}</p>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+              <a href="/route-detail?id=${s.route_id}" class="btn btn-primary btn-sm">Open Guide &rarr;</a>
+              <button class="btn btn-outline btn-sm" style="color:var(--error);" onclick="unsaveRoute(${s.id})">Remove</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        list.innerHTML = `<div class="alert alert-danger">${escapeHTML(err.message)}</div>`;
+      }
+    }
+
+    async function unsaveRoute(id) {
+      try {
+        await window.fixRoute.unsaveRoute(id);
+        showToast("Route removed from saved list.", "info");
+        loadSavedRoutes();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    async function loadDashboardComplaints() {
+      const list = document.getElementById("dashboard-complaints-list");
+      try {
+        const complaints = await window.fixRoute.getComplaints();
+        if (complaints.length === 0) {
+          list.innerHTML = `<p style="color:var(--text-muted);">No tracked complaints found. <a href="/tracker">Log one in the Tracker</a>.</p>`;
+          return;
+        }
+        list.innerHTML = complaints.slice(0, 5).map(c => `
+          <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+            <div>
+              <span class="badge status-${c.status.toLowerCase().replace(/\s+/g, '-')}">${escapeHTML(c.status)}</span>
+              <h4 style="font-size:1.05rem; margin-top:0.25rem;">${escapeHTML(c.title)}</h4>
+              <span style="font-size:0.8rem; color:var(--text-muted);">${escapeHTML(c.organization_name)} &bull; Ref: ${escapeHTML(c.reference_number || 'None')}</span>
+            </div>
+            <a href="/tracker" class="btn btn-outline btn-sm">View in Tracker &rarr;</a>
+          </div>
+        `).join('');
+      } catch (err) {
+        list.innerHTML = `<div class="alert alert-danger">${escapeHTML(err.message)}</div>`;
+      }
+    }
+
+    async function loadDrafts() {
+      const list = document.getElementById("drafts-list");
+      try {
+        const drafts = await window.fixRoute.getDrafts();
+        if (drafts.length === 0) {
+          list.innerHTML = `
+            <div class="card" style="text-align:center; padding:3rem; color:var(--text-muted);">
+              <p>No saved complaint drafts yet.</p>
+              <a href="/complaint-generator" class="btn btn-outline btn-sm" style="margin-top:0.75rem;">Create a Complaint Draft</a>
+            </div>
+          `;
+          return;
+        }
+
+        list.innerHTML = drafts.map(d => `
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem;">
+              <div>
+                <h4 style="font-size:1.1rem; color:var(--primary-navy);">${escapeHTML(d.title)}</h4>
+                <span style="font-size:0.8rem; color:var(--text-muted);">Style: ${escapeHTML(d.style)} &bull; ${new Date(d.created_at).toLocaleDateString('en-IN')}</span>
+              </div>
+              <button class="btn btn-outline btn-sm" style="color:var(--error);" onclick="deleteDraft(${d.id})">Delete</button>
+            </div>
+            <p style="font-size:0.875rem; color:#334155; font-family:monospace; background:#F8FAFC; padding:0.75rem; border-radius:var(--radius-md); max-height:100px; overflow-y:hidden;">
+              ${escapeHTML(d.body.slice(0, 200))}...
+            </p>
+            <div style="margin-top:0.75rem;">
+              <button class="btn btn-outline btn-sm" onclick="copyText('${encodeURIComponent(d.body)}')">Copy Full Letter</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        list.innerHTML = `<div class="alert alert-danger">${escapeHTML(err.message)}</div>`;
+      }
+    }
+
+    async function deleteDraft(id) {
+      if (!confirm("Delete this draft?")) return;
+      try {
+        await window.fixRoute.deleteDraft(id);
+        showToast("Draft deleted.", "info");
+        loadDrafts();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    function copyText(encoded) {
+      navigator.clipboard.writeText(decodeURIComponent(encoded)).then(() => {
+        showToast("Complaint draft copied to clipboard!", "success");
+      });
+    }
+
+    async function loadSearchHistory() {
+      const list = document.getElementById("search-history-list");
+      try {
+        const history = await window.fixRoute.getSearchHistory();
+        if (history.length === 0) {
+          list.innerHTML = `<p style="color:var(--text-muted);">No search history recorded.</p>`;
+          return;
+        }
+
+        list.innerHTML = history.map(h => `
+          <div class="card" style="padding:0.75rem 1rem; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <span style="font-weight:600; color:var(--primary-navy);">${escapeHTML(h.query_text)}</span>
+              <span style="font-size:0.8rem; color:var(--text-muted); margin-left:0.5rem;">${h.result_count} results found</span>
+            </div>
+            <a href="/search?q=${encodeURIComponent(h.query_text)}" class="btn btn-outline btn-sm">Repeat Search</a>
+          </div>
+        `).join('');
+      } catch (err) {
+        list.innerHTML = `<div class="alert alert-danger">${escapeHTML(err.message)}</div>`;
+      }
+    }
+
+    async function clearSearchHistory() {
+      if (!confirm("Clear your entire search history?")) return;
+      try {
+        await window.fixRoute.clearSearchHistory();
+        showToast("Search history cleared.", "success");
+        loadSearchHistory();
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+
+    async function handleChangePassword(e) {
+      e.preventDefault();
+      const oldPwd = document.getElementById("old-pwd").value;
+      const newPwd = document.getElementById("new-pwd").value;
+      try {
+        await window.fixRoute.request("/api/auth/change-password", {
+          method: "POST",
+          body: JSON.stringify({ old_password: oldPwd, new_password: newPwd })
+        });
+        showToast("Password updated successfully!", "success");
+        document.getElementById("change-pwd-form").reset();
+      } catch (err) {
+        showToast(err.message || "Failed to update password", "error");
+      }
+    }
+
+    async function handleDeleteAccount() {
+      if (!confirm("Are you ABSOLUTELY sure? This will delete your account and all associated data permanently.")) return;
+      try {
+        await window.fixRoute.deleteAccount();
+        alert("Your account and records have been deleted.");
+        window.location.href = "/";
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    }
+  </script>
+</body>
+</html>

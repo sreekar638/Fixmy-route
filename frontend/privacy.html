@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — FixRoute</title>
+  <link rel="stylesheet" href="/static/css/brand.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="brand-logo">
+        <div class="brand-icon">✓</div>
+        <span>FIXROUTE</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/" class="nav-link">Home</a></li>
+        <li><a href="/search" class="nav-link">Find a Solution</a></li>
+        <li><a href="/tracker" class="nav-link">Track Complaint</a></li>
+        <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+      </ul>
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu">☰</button>
+    </div>
+  </header>
+
+  <main class="container-narrow">
+    <div style="margin-bottom: 2rem;">
+      <h1 style="font-size: 2.25rem; color: var(--primary-navy); margin-bottom: 0.5rem;">Privacy Policy</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Last Updated: October 2026 &bull; Compliant with Indian DPDP Act Principles</p>
+    </div>
+
+    <div class="card" style="padding: 2.25rem; line-height: 1.8; color: #334155; font-size: 0.95rem;">
+      <h3 style="color: var(--primary-navy); margin-bottom: 0.5rem;">1. Data Minimization Commitment</h3>
+      <p style="margin-bottom: 1.5rem;">
+        FixRoute collects only the minimum personal data required to deliver dispute-routing guidance and optional account synchronization. We never request sensitive financial authenticators, including banking PINs, Aadhaar OTPs, net-banking passwords, or payment card CVVs.
+      </p>
+
+      <h3 style="color: var(--primary-navy); margin-bottom: 0.5rem;">2. Information We Process</h3>
+      <p style="margin-bottom: 1rem;"><strong>Account Information:</strong> If you register, we store your name, email address, and a cryptographically salted bcrypt hash of your password. We never store plaintext passwords.</p>
+      <p style="margin-bottom: 1rem;"><strong>Search Queries & Routing:</strong> Problem descriptions typed into the search bar are analyzed to match regulatory authorities. Search history may be saved to your private dashboard and can be wiped with one click.</p>
+      <p style="margin-bottom: 1.5rem;"><strong>Complaint Drafts & Tracker:</strong> Complaint records, ticket numbers, and drafts generated through FixRoute are stored securely in your private account and are inaccessible to other users or search engines.</p>
+
+      <h3 style="color: var(--primary-navy); margin-bottom: 0.5rem;">3. No Third-Party Data Selling</h3>
+      <p style="margin-bottom: 1.5rem;">
+        FixRoute does not sell, rent, or monetize personal user data to advertising brokers, credit bureaus, or collection agencies.
+      </p>
+
+      <h3 style="color: var(--primary-navy); margin-bottom: 0.5rem;">4. Your Right to Erasure</h3>
+      <p style="margin-bottom: 1.5rem;">
+        Under Indian data protection principles, you possess the right to permanently delete your FixRoute account. Initiating account deletion through your dashboard purges all personal records, tracked complaints, and complaint drafts immediately.
+      </p>
+
+      <h3 style="color: var(--primary-navy); margin-bottom: 0.5rem;">5. Contact Privacy Officer</h3>
+      <p>
+        For inquiries regarding data privacy or to exercise your rights, email <a href="mailto:privacy@fixroute.in">privacy@fixroute.in</a>.
+      </p>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+          <div class="brand-icon" style="width:28px; height:28px; font-size:0.95rem;">✓</div>
+          <span style="font-size:1.3rem; font-weight:800; color:white;">FIXROUTE</span>
+        </div>
+        <p>Tell us your problem. We'll tell you who can fix it.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>&copy; 2026 FixRoute. Built for India.</div>
+    </div>
+  </footer>
+
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/nav.js"></script>
+</body>
+</html>
