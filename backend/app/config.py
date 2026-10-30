@@ -1,6 +1,7 @@
 import os
 from typing import List
 from pydantic_settings import BaseSettings
+from pathlib import Path
 
 class Settings(BaseSettings):
     APP_NAME: str = "FixRoute"
@@ -16,7 +17,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
     
-    DATABASE_URL: str = "sqlite:///./fixroute.db"
+    DATABASE_URL: str = "sqlite:////tmp/fixroute.db" if os.environ.get("VERCEL") else "sqlite:///./fixroute.db"
     CORS_ORIGINS: str = "http://localhost:8000,http://127.0.0.1:8000,http://localhost:3000"
     
     AI_PROVIDER: str = "none"  # "none", "gemini", or "openai"
@@ -35,4 +36,5 @@ class Settings(BaseSettings):
     def cors_origin_list(self) -> List[str]:
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
 
-settings = Settings()
+ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
+settings = Settings(_env_file=ENV_FILE)

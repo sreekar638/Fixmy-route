@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Help & FAQ — FixRoute</title>
   <meta name="description" content="Frequently asked questions about FixRoute, grievance procedures in India, and contact support.">
-  <link rel="stylesheet" href="/static/css/brand.css">
-  <link rel="stylesheet" href="/static/css/layout.css">
-  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/css/brand.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -17,100 +17,10 @@
   <!-- Navigation Bar -->
   <header class="site-header">
     <div class="header-container">
-      <a href="/" class="brand-logo">
-        <div class="brand-icon">✓</div>
-        <span>FIXROUTE</span>
-      </a>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="/" class="nav-link">Home</a></li>
-        <li><a href="/search" class="nav-link">Find a Solution</a></li>
-        <li><a href="/tracker" class="nav-link">Track Complaint</a></li>
-        <li><a href="/complaint-generator" class="nav-link">Draft Complaint</a></li>
-        <li><a href="/help" class="nav-link active">Help & FAQ</a></li>
-      </ul>
-      <div class="nav-auth" id="nav-auth-container"></div>
-      <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu">☰</button>
-    </div>
-  </header>
-
-  <main class="container-narrow">
-    <div style="margin-bottom: 2rem;">
-      <h1 style="font-size: 2.25rem; color: var(--primary-navy); margin-bottom: 0.5rem;">Help Center & FAQs</h1>
-      <p style="color: var(--text-muted); font-size: 1.05rem;">
-        Everything you need to know about using FixRoute, complaint escalations, and consumer dispute resolution in India.
-      </p>
-    </div>
-
-    <!-- FAQs Accordion -->
-    <div class="card" style="padding: 2rem; margin-bottom: 2rem;">
-      <h2 style="font-size: 1.35rem; color: var(--primary-navy); margin-bottom: 1.25rem;">Frequently Asked Questions</h2>
-      
-      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
-        <div>
-          <h3 style="font-size: 1.05rem; color: var(--primary-navy); margin-bottom: 0.25rem;">Does FixRoute submit complaints on my behalf?</h3>
-          <p style="font-size: 0.925rem; color: #334155; line-height: 1.6;">
-            No. FixRoute is an independent guidance and drafting tool. By law in India, complaints must be submitted by the consumer themselves to ensure official standing and security. We provide the verified official portal link and pre-drafted legal letter so you can submit in minutes.
-          </p>
-        </div>
-
-        <div>
-          <h3 style="font-size: 1.05rem; color: var(--primary-navy); margin-bottom: 0.25rem;">What is an Ombudsman?</h3>
-          <p style="font-size: 0.925rem; color: #334155; line-height: 1.6;">
-            An Ombudsman is an independent official appointed by a statutory regulatory body (like the Reserve Bank of India or Electricity Regulatory Commissions) to investigate complaints against companies. Their services are free for citizens.
-          </p>
-        </div>
-
-        <div>
-          <h3 style="font-size: 1.05rem; color: var(--primary-navy); margin-bottom: 0.25rem;">Can I use FixRoute without creating an account?</h3>
-          <p style="font-size: 0.925rem; color: #334155; line-height: 1.6;">
-            Yes! You can search all problem directories, view resolution steps, complete evidence checklists, generate formal letters, and track complaints in guest mode. Creating an account simply lets you access your data across devices.
-          </p>
-        </div>
-
-        <div>
-          <h3 style="font-size: 1.05rem; color: var(--primary-navy); margin-bottom: 0.25rem;">How is FixRoute funded?</h3>
-          <p style="font-size: 0.925rem; color: #334155; line-height: 1.6;">
-            FixRoute was founded by Sreekar as an independent public utility project. We do not sell user data, take commissions from disputed entities, or run deceptive ads.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Contact Support Form -->
-    <div class="card" id="contact" style="padding: 2rem;">
-      <h2 style="font-size: 1.35rem; color: var(--primary-navy); margin-bottom: 0.5rem;">Contact Support & Feedback</h2>
-      <p style="color: var(--text-muted); font-size: 0.925rem; margin-bottom: 1.5rem;">
-        Have a question or feedback on how FixRoute can improve? Send us a note below.
-      </p>
-
-      <form id="contact-feedback-form" onsubmit="handleContactSubmit(event)">
-        <div style="margin-bottom: 1rem;">
-          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">How satisfied are you with FixRoute?</label>
-          <select id="contact-rating" class="form-select" style="max-width: 240px;">
-            <option value="5">⭐⭐⭐⭐⭐ Excellent (5/5)</option>
-            <option value="4">⭐⭐⭐⭐ Good (4/5)</option>
-            <option value="3">⭐⭐⭐ Neutral (3/5)</option>
-            <option value="2">⭐⭐ Needs Improvement (2/5)</option>
-            <option value="1">⭐ Poor (1/5)</option>
-          </select>
-        </div>
-
-        <div style="margin-bottom: 1.5rem;">
-          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Your Feedback or Message</label>
-          <textarea id="contact-message" class="form-textarea" rows="4" required placeholder="Tell us your feedback or question..."></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Send Feedback &rarr;</button>
-      </form>
-    </div>
-  </main>
-
-  <!-- Site Footer -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      <div class="footer-brand">
-        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
-          <div class="brand-icon" style="width:28px; height:28px; font-size:0.95rem;">✓</div>
+      <a href="/index.html" class="brand-logo">
+        <div class="brand-icon" style="width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
           <span style="font-size:1.3rem; font-weight:800; color:white;">FIXROUTE</span>
         </div>
         <p>Tell us your problem. We'll tell you who can fix it.</p>
@@ -119,15 +29,15 @@
       <div class="footer-col">
         <h4>Explore</h4>
         <ul>
-          <li><a href="/search">Find a Solution</a></li>
-          <li><a href="/tracker">Complaint Tracker</a></li>
+          <li><a href="/search.html">Find a Solution</a></li>
+          <li><a href="/tracker.html">Complaint Tracker</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
         <ul>
-          <li><a href="/privacy">Privacy Policy</a></li>
-          <li><a href="/terms">Terms of Service</a></li>
+          <li><a href="/privacy.html">Privacy Policy</a></li>
+          <li><a href="/terms.html">Terms of Service</a></li>
         </ul>
       </div>
     </div>
@@ -136,8 +46,8 @@
     </div>
   </footer>
 
-  <script src="/static/js/api.js"></script>
-  <script src="/static/js/nav.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/nav.js"></script>
   <script>
     async function handleContactSubmit(e) {
       e.preventDefault();

@@ -64,49 +64,66 @@ def health_check():
 frontend_dir = os.path.join(os.path.dirname(__file__), "frontend")
 if os.path.exists(frontend_dir):
     app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+    css_dir = os.path.join(frontend_dir, "css")
+    if os.path.exists(css_dir):
+        app.mount("/css", StaticFiles(directory=css_dir), name="css")
+    js_dir = os.path.join(frontend_dir, "js")
+    if os.path.exists(js_dir):
+        app.mount("/js", StaticFiles(directory=js_dir), name="js")
 
-    # Clean HTML Page Routes
+    # Clean HTML Page Routes (supports both clean URLs and .html extensions)
     @app.get("/", include_in_schema=False)
+    @app.get("/index.html", include_in_schema=False)
     def serve_home():
         return FileResponse(os.path.join(frontend_dir, "index.html"))
 
     @app.get("/search", include_in_schema=False)
+    @app.get("/search.html", include_in_schema=False)
     def serve_search():
         return FileResponse(os.path.join(frontend_dir, "search.html"))
 
     @app.get("/route-detail", include_in_schema=False)
+    @app.get("/route-detail.html", include_in_schema=False)
     def serve_route_detail():
         return FileResponse(os.path.join(frontend_dir, "route-detail.html"))
 
     @app.get("/complaint-generator", include_in_schema=False)
+    @app.get("/complaint-generator.html", include_in_schema=False)
     def serve_generator():
         return FileResponse(os.path.join(frontend_dir, "complaint-generator.html"))
 
     @app.get("/tracker", include_in_schema=False)
+    @app.get("/tracker.html", include_in_schema=False)
     def serve_tracker():
         return FileResponse(os.path.join(frontend_dir, "tracker.html"))
 
     @app.get("/dashboard", include_in_schema=False)
+    @app.get("/dashboard.html", include_in_schema=False)
     def serve_dashboard():
         return FileResponse(os.path.join(frontend_dir, "dashboard.html"))
 
     @app.get("/admin", include_in_schema=False)
+    @app.get("/admin.html", include_in_schema=False)
     def serve_admin():
         return FileResponse(os.path.join(frontend_dir, "admin.html"))
 
     @app.get("/about", include_in_schema=False)
+    @app.get("/about.html", include_in_schema=False)
     def serve_about():
         return FileResponse(os.path.join(frontend_dir, "about.html"))
 
     @app.get("/help", include_in_schema=False)
+    @app.get("/help.html", include_in_schema=False)
     def serve_help():
         return FileResponse(os.path.join(frontend_dir, "help.html"))
 
     @app.get("/privacy", include_in_schema=False)
+    @app.get("/privacy.html", include_in_schema=False)
     def serve_privacy():
         return FileResponse(os.path.join(frontend_dir, "privacy.html"))
 
     @app.get("/terms", include_in_schema=False)
+    @app.get("/terms.html", include_in_schema=False)
     def serve_terms():
         return FileResponse(os.path.join(frontend_dir, "terms.html"))
 

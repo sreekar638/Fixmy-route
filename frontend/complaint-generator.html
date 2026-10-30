@@ -40,172 +40,10 @@
   <!-- Navigation Bar -->
   <header class="site-header">
     <div class="header-container">
-      <a href="/" class="brand-logo">
-        <div class="brand-icon">✓</div>
-        <span>FIXROUTE</span>
-      </a>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="/" class="nav-link">Home</a></li>
-        <li><a href="/search" class="nav-link">Find a Solution</a></li>
-        <li><a href="/tracker" class="nav-link">Track Complaint</a></li>
-        <li><a href="/complaint-generator" class="nav-link active">Draft Complaint</a></li>
-        <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
-      </ul>
-      <div class="nav-auth" id="nav-auth-container"></div>
-      <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu">☰</button>
-    </div>
-  </header>
-
-  <!-- Main Generator Container -->
-  <main class="container" style="max-width: 1200px;">
-    <div style="margin-bottom: 2rem;">
-      <h1 style="font-size: 1.85rem; margin-bottom: 0.5rem;">Legal Grievance Letter Generator</h1>
-      <p style="color: var(--text-muted); font-size: 1rem;">
-        Draft a polite, structured, and legally grounded complaint letter ready to submit to customer care, the nodal grievance officer, or statutory ombudsman.
-      </p>
-    </div>
-
-    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 2rem; align-items: start;">
-      
-      <!-- Left Column: Input Form -->
-      <div class="card" style="padding: 1.75rem;">
-        <h3 style="font-size: 1.2rem; margin-bottom: 1.25rem; color: var(--primary-navy);">1. Enter Grievance Details</h3>
-
-        <form id="generator-form" onsubmit="handleGenerate(event)">
-          <!-- Writing Style Selector -->
-          <div style="margin-bottom: 1.25rem;">
-            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; text-transform: uppercase; color: var(--text-muted);">
-              Writing Style
-            </label>
-            <div style="display: flex; gap: 0.5rem;">
-              <button type="button" class="style-pill active" onclick="setStyle('formal', this)">Formal / Standard</button>
-              <button type="button" class="style-pill" onclick="setStyle('concise', this)">Concise & Direct</button>
-              <button type="button" class="style-pill" onclick="setStyle('detailed', this)">Detailed Legal Notice</button>
-            </div>
+      <a href="/index.html" class="brand-logo">
+        <div class="brand-icon" style="width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
-
-          <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Your Full Name / Signature</label>
-            <input type="text" id="gen-name" class="form-input" required placeholder="e.g. Sreekar">
-          </div>
-
-          <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Organization / Service Provider Name</label>
-            <input type="text" id="gen-org" class="form-input" required placeholder="e.g. State Bank of India, BESCOM, Airtel">
-          </div>
-
-          <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Description of What Happened</label>
-            <textarea id="gen-issue" class="form-textarea" rows="4" required placeholder="State clearly what went wrong, including financial amounts or dates..."></textarea>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
-            <div>
-              <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Incident Date / Period</label>
-              <input type="text" id="gen-date" class="form-input" placeholder="e.g. 24 October 2026">
-            </div>
-            <div>
-              <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Existing Ticket / Ref ID</label>
-              <input type="text" id="gen-ref" class="form-input" placeholder="e.g. SR-8819230">
-            </div>
-          </div>
-
-          <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Prior Contact with Support (Optional)</label>
-            <input type="text" id="gen-prior" class="form-input" placeholder="e.g. Reported via mobile app, promised turnaround passed without resolution.">
-          </div>
-
-          <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Desired Resolution / Remedy</label>
-            <textarea id="gen-relief" class="form-textarea" rows="2" required placeholder="e.g. Immediate refund of ₹5,000 to my source bank account and statutory delay compensation."></textarea>
-          </div>
-
-          <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.35rem;">Evidence Documents Enclosed</label>
-            <div id="gen-evidence-wrap" style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem;">
-              <label><input type="checkbox" class="gen-ev-chk" value="Bank Account / Card Statement" checked> Bank Statement showing transaction debit</label>
-              <label><input type="checkbox" class="gen-ev-chk" value="Official Payment Receipt / Invoice" checked> Payment Receipt / Order confirmation</label>
-              <label><input type="checkbox" class="gen-ev-chk" value="Screenshot of error or failure notification"> Screenshot of error or service outage</label>
-              <label><input type="checkbox" class="gen-ev-chk" value="Previous Customer Care Ticket SMS / Email"> Previous Support Ticket acknowledgement</label>
-            </div>
-          </div>
-
-          <button type="submit" class="btn btn-primary" style="width: 100%;">
-            Generate Complaint Draft &rarr;
-          </button>
-        </form>
-      </div>
-
-      <!-- Right Column: Live Draft Preview & Actions -->
-      <div>
-        <div class="card" style="padding: 1.75rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-            <h3 style="font-size: 1.2rem; color: var(--primary-navy);">2. Live Draft Preview</h3>
-            <div style="display: flex; gap: 0.5rem;">
-              <button type="button" class="btn btn-outline btn-sm" onclick="copyDraftToClipboard()">
-                📋 Copy
-              </button>
-              <button type="button" class="btn btn-outline btn-sm" onclick="downloadDraftAsTxt()">
-                📥 Download .TXT
-              </button>
-              <button type="button" class="btn btn-outline btn-sm" onclick="printDraft()">
-                🖨️ Print / PDF
-              </button>
-            </div>
-          </div>
-
-          <!-- Subject Line Display -->
-          <div style="margin-bottom: 1rem;">
-            <label style="display: block; font-size: 0.775rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 0.25rem;">
-              Email Subject Line:
-            </label>
-            <div id="draft-subject-preview" style="background: #F1F5F9; padding: 0.65rem 0.85rem; border-radius: var(--radius-md); font-weight: 600; font-size: 0.9rem; border: 1px solid var(--border-color);">
-              FORMAL GRIEVANCE: [Subject will appear here once generated]
-            </div>
-          </div>
-
-          <!-- Editable Body Area -->
-          <div style="margin-bottom: 1.25rem;">
-            <label style="display: block; font-size: 0.775rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 0.25rem;">
-              Complaint Body (Fully Editable):
-            </label>
-            <textarea id="draft-body-preview" class="form-textarea" rows="16" style="font-family: monospace; font-size: 0.875rem; line-height: 1.6;" placeholder="Click 'Generate Complaint Draft' to create your formal letter..."></textarea>
-          </div>
-
-          <!-- Action Buttons Bar -->
-          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-              <button type="button" class="btn btn-teal" onclick="openEmailClient()">
-                ✉️ Open in Email Client
-              </button>
-              <button type="button" class="btn btn-navy" onclick="saveDraftToAccount()">
-                💾 Save Draft to Account
-              </button>
-            </div>
-
-            <button type="button" class="btn btn-outline" style="border-color: #3B82F6; color: #1D4ED8;" onclick="trackThisComplaint()">
-              🎯 Add to Complaint Tracker Dashboard &rarr;
-            </button>
-          </div>
-
-          <!-- Integrity notice -->
-          <p style="font-size: 0.775rem; color: var(--text-muted); margin-top: 1rem; line-height: 1.5; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
-            <strong>Integrity Notice:</strong> FixRoute generates structured factual drafts based solely on the details you supply. Always verify all dates, account numbers, and figures before submitting to official external authorities.
-          </p>
-        </div>
-      </div>
-
-    </div>
-  </main>
-
-  <div id="printable-area" style="display: none; padding: 2rem; font-family: serif; white-space: pre-wrap;"></div>
-
-  <!-- Site Footer -->
-  <footer class="site-footer">
-    <div class="footer-container">
-      <div class="footer-brand">
-        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
-          <div class="brand-icon" style="width:28px; height:28px; font-size:0.95rem;">✓</div>
           <span style="font-size:1.3rem; font-weight:800; color:white;">FIXROUTE</span>
         </div>
         <p>Tell us your problem. We'll tell you who can fix it.</p>
@@ -214,17 +52,17 @@
       <div class="footer-col">
         <h4>Navigation</h4>
         <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/search">Find a Solution</a></li>
-          <li><a href="/tracker">Complaint Tracker</a></li>
+          <li><a href="/index.html">Home</a></li>
+          <li><a href="/search.html">Find a Solution</a></li>
+          <li><a href="/tracker.html">Complaint Tracker</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4>Trust & Legal</h4>
         <ul>
-          <li><a href="/about">About FixRoute</a></li>
-          <li><a href="/privacy">Privacy Policy</a></li>
-          <li><a href="/terms">Terms of Service</a></li>
+          <li><a href="/about.html">About FixRoute</a></li>
+          <li><a href="/privacy.html">Privacy Policy</a></li>
+          <li><a href="/terms.html">Terms of Service</a></li>
         </ul>
       </div>
     </div>
@@ -233,8 +71,8 @@
     </div>
   </footer>
 
-  <script src="/static/js/api.js"></script>
-  <script src="/static/js/nav.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/nav.js"></script>
   <script>
     let currentStyle = "formal";
     let activeRouteId = null;
@@ -391,7 +229,7 @@
       if (ref) params.append("ref", ref);
       if (activeRouteId) params.append("route_id", activeRouteId);
 
-      window.location.href = `/tracker?${params.toString()}`;
+      window.location.href = `/tracker.html?${params.toString()}`;
     }
   </script>
 </body>

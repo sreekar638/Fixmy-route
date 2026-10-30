@@ -26,16 +26,27 @@ def setup_db():
 def test_frontend_routes_served():
     routes_to_test = [
         "/",
+        "/index.html",
         "/search",
+        "/search.html",
         "/route-detail",
+        "/route-detail.html",
         "/complaint-generator",
+        "/complaint-generator.html",
         "/tracker",
+        "/tracker.html",
         "/dashboard",
+        "/dashboard.html",
         "/admin",
+        "/admin.html",
         "/about",
+        "/about.html",
         "/help",
+        "/help.html",
         "/privacy",
+        "/privacy.html",
         "/terms",
+        "/terms.html",
     ]
     for r in routes_to_test:
         response = client.get(r)
@@ -43,6 +54,18 @@ def test_frontend_routes_served():
         assert "<!DOCTYPE html>" in response.text or "<html" in response.text
 
 def test_static_assets_served():
-    for asset in ["/static/css/brand.css", "/static/css/layout.css", "/static/css/components.css", "/static/js/api.js", "/static/js/nav.js"]:
+    assets_to_test = [
+        "/css/brand.css",
+        "/css/layout.css",
+        "/css/components.css",
+        "/js/api.js",
+        "/js/nav.js",
+        "/static/css/brand.css",
+        "/static/css/layout.css",
+        "/static/css/components.css",
+        "/static/js/api.js",
+        "/static/js/nav.js",
+    ]
+    for asset in assets_to_test:
         response = client.get(asset)
         assert response.status_code == 200, f"Asset {asset} failed with {response.status_code}"

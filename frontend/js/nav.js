@@ -22,11 +22,11 @@ function initNavbar() {
     if (user) {
       authContainer.innerHTML = `
         <div style="display:flex; align-items:center; gap:0.75rem;">
-          <a href="/dashboard" class="btn btn-outline btn-sm" title="User Dashboard">
+          <a href="/dashboard.html" class="btn btn-outline btn-sm" title="User Dashboard">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>
-            ${escapeHTML(user.full_name.split(' ')[0])}
+            ${escapeHTML(user.full_name ? user.full_name.split(' ')[0] : 'Citizen')}
           </a>
-          ${user.role === 'admin' ? '<a href="/admin" class="btn btn-navy btn-sm">Admin</a>' : ''}
+          ${user.role === 'admin' ? '<a href="/admin.html" class="btn btn-navy btn-sm">Admin</a>' : ''}
           <button id="nav-logout-btn" class="btn btn-outline btn-sm" style="color:var(--error); border-color:#FECACA;">Logout</button>
         </div>
       `;
@@ -188,7 +188,7 @@ function showToast(message, type = "info") {
 
 function escapeHTML(str) {
   if (!str) return "";
-  return str.replace(/[&<>'"]/g, 
+  return String(str).replace(/[&<>'"]/g, 
     tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
   );
 }
