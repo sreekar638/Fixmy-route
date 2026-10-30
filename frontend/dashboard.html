@@ -34,7 +34,163 @@
   <header class="site-header">
     <div class="header-container">
       <a href="/index.html" class="brand-logo">
-        <div class="brand-icon" style="width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">
+        <div class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <span>FIXROUTE</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/index.html" class="nav-link">Home</a></li>
+        <li><a href="/search.html" class="nav-link">Find a Solution</a></li>
+        <li><a href="/tracker.html" class="nav-link">Track Complaint</a></li>
+        <li><a href="/complaint-generator.html" class="nav-link">Draft Complaint</a></li>
+        <li><a href="/dashboard.html" class="nav-link active">Dashboard</a></li>
+        <li><a href="/about.html" class="nav-link">About</a></li>
+      </ul>
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu"><span style="font-size: 1.4rem; line-height: 1;">&#9776;</span></button>
+    </div>
+  </header>
+
+  <!-- Dashboard Container -->
+  <main class="container" style="max-width: 1140px;">
+    
+    <!-- Guest Prompt if not authenticated -->
+    <div id="guest-guard-box" class="card" style="display:none; padding:1.25rem 1.5rem; margin-bottom:1.5rem; background:#EFF6FF; border-color:#BFDBFE; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+      <div>
+        <strong style="color:var(--primary-navy); font-size:1rem;">💡 Guest Mode Active</strong>
+        <p style="color:#1E40AF; font-size:0.875rem; margin-top:0.25rem; margin-bottom:0;">
+          Viewing routes, drafts, and complaints stored locally in this browser. Sign in or register to sync across devices.
+        </p>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn btn-primary btn-sm" onclick="openAuthModal('login')">Sign In</button>
+        <button class="btn btn-outline btn-sm" onclick="openAuthModal('register')">Create Free Account</button>
+      </div>
+    </div>
+
+    <!-- Authenticated Dashboard View -->
+    <div id="authenticated-view" style="display:none;">
+      
+      <!-- Welcome Header -->
+      <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
+        <h1 style="font-size: 1.85rem; color: var(--primary-navy);" id="user-greeting">Welcome, Citizen</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;" id="user-email-display"></p>
+      </div>
+
+      <!-- Dashboard Layout: Sidebar + Tab Content -->
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 2rem; align-items: start;">
+        
+        <!-- Sidebar Navigation -->
+        <div class="card" style="padding: 0.75rem;">
+          <div class="dash-nav-item active" onclick="switchTab('saved-routes', this)">
+            📑 Saved Routes
+          </div>
+          <div class="dash-nav-item" onclick="switchTab('complaints-tab', this)">
+            🎯 Tracked Complaints
+          </div>
+          <div class="dash-nav-item" onclick="switchTab('drafts-tab', this)">
+            📝 Complaint Drafts
+          </div>
+          <div class="dash-nav-item" onclick="switchTab('history-tab', this)">
+            🕒 Search History
+          </div>
+          <div class="dash-nav-item" onclick="switchTab('settings-tab', this)">
+            ⚙️ Account Settings
+          </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div id="tab-content-area">
+          
+          <!-- Tab 1: Saved Routes -->
+          <div id="tab-saved-routes">
+            <h2 style="font-size: 1.35rem; margin-bottom: 1rem;">Saved Problem Routes</h2>
+            <div id="saved-routes-list" style="display: flex; flex-direction: column; gap: 1rem;">
+              <p style="color: var(--text-muted);">Loading saved routes...</p>
+            </div>
+          </div>
+
+          <!-- Tab 2: Tracked Complaints -->
+          <div id="tab-complaints-tab" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h2 style="font-size: 1.35rem;">Tracked Complaints</h2>
+              <a href="/tracker.html" class="btn btn-primary btn-sm">Open Full Tracker &rarr;</a>
+            </div>
+            <div id="dashboard-complaints-list" style="display: flex; flex-direction: column; gap: 1rem;">
+              <p style="color: var(--text-muted);">Loading complaints...</p>
+            </div>
+          </div>
+
+          <!-- Tab 3: Complaint Drafts -->
+          <div id="tab-drafts-tab" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h2 style="font-size: 1.35rem;">Saved Complaint Drafts</h2>
+              <a href="/complaint-generator.html" class="btn btn-outline btn-sm">+ Draft New</a>
+            </div>
+            <div id="drafts-list" style="display: flex; flex-direction: column; gap: 1rem;">
+              <p style="color: var(--text-muted);">Loading drafts...</p>
+            </div>
+          </div>
+
+          <!-- Tab 4: Search History -->
+          <div id="tab-history-tab" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h2 style="font-size: 1.35rem;">Recent Problem Searches</h2>
+              <button class="btn btn-outline btn-sm" style="color: var(--error);" onclick="clearSearchHistory()">
+                Clear Search History
+              </button>
+            </div>
+            <div id="search-history-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <p style="color: var(--text-muted);">Loading search history...</p>
+            </div>
+          </div>
+
+          <!-- Tab 5: Account Settings -->
+          <div id="tab-settings-tab" style="display: none;">
+            <h2 style="font-size: 1.35rem; margin-bottom: 1.25rem;">Account & Security Settings</h2>
+            
+            <!-- Change Password -->
+            <div class="card" style="margin-bottom: 1.5rem; padding: 1.5rem;">
+              <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Change Password</h3>
+              <form id="change-pwd-form" onsubmit="handleChangePassword(event)">
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Current Password</label>
+                  <input type="password" id="old-pwd" class="form-input" required style="max-width: 380px;">
+                </div>
+                <div style="margin-bottom: 1.25rem;">
+                  <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">New Password (min. 8 characters)</label>
+                  <input type="password" id="new-pwd" class="form-input" required minlength="8" style="max-width: 380px;">
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">Update Password</button>
+              </form>
+            </div>
+
+            <!-- Danger Zone / Delete Account -->
+            <div class="card" style="border: 1px solid #FECACA; background: #FEF2F2; padding: 1.5rem;">
+              <h3 style="font-size: 1.1rem; color: #991B1B; margin-bottom: 0.5rem;">Delete Account & All Data</h3>
+              <p style="font-size: 0.875rem; color: #7F1D1D; margin-bottom: 1rem; line-height: 1.6;">
+                Permanently delete your FixRoute account. All saved problem routes, complaint drafts, and tracked dispute records will be erased immediately. This action cannot be undone.
+              </p>
+              <button type="button" class="btn btn-outline btn-sm" style="background: white; border-color: #EF4444; color: #EF4444;" onclick="handleDeleteAccount()">
+                Delete My Account
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+          <div class="brand-icon" style="width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
           <span style="font-size:1.3rem; font-weight:800; color:white;">FIXROUTE</span>
@@ -74,19 +230,19 @@
       const guardBox = document.getElementById("guest-guard-box");
       const authView = document.getElementById("authenticated-view");
 
-      if (!window.fixRoute.isAuthenticated()) {
-        guardBox.style.display = "block";
-        authView.style.display = "none";
-        return;
-      }
-
-      guardBox.style.display = "none";
       authView.style.display = "block";
 
-      const user = window.fixRoute.user;
-      if (user) {
-        document.getElementById("user-greeting").textContent = `Welcome, ${user.full_name}`;
-        document.getElementById("user-email-display").textContent = `${user.email} &bull; FixRoute Citizen Account`;
+      if (!window.fixRoute.isAuthenticated()) {
+        guardBox.style.display = "flex";
+        document.getElementById("user-greeting").textContent = "Citizen Dashboard";
+        document.getElementById("user-email-display").innerHTML = "Guest Mode &bull; Local Browser Storage (Unsynced)";
+      } else {
+        guardBox.style.display = "none";
+        const user = window.fixRoute.user;
+        if (user) {
+          document.getElementById("user-greeting").textContent = `Welcome, ${user.full_name}`;
+          document.getElementById("user-email-display").innerHTML = `${user.email} &bull; FixRoute Citizen Account`;
+        }
       }
 
       loadSavedRoutes();
@@ -278,7 +434,7 @@
       try {
         await window.fixRoute.deleteAccount();
         alert("Your account and records have been deleted.");
-        window.location.href = "/";
+        window.location.href = "/index.html";
       } catch (err) {
         showToast(err.message, "error");
       }

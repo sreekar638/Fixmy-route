@@ -18,7 +18,168 @@
   <header class="site-header">
     <div class="header-container">
       <a href="/index.html" class="brand-logo">
-        <div class="brand-icon" style="width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">
+        <div class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <span>FIXROUTE</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/index.html" class="nav-link">Home</a></li>
+        <li><a href="/search.html" class="nav-link">Find a Solution</a></li>
+       <li><a href="/tracker.html" class="nav-link active">Track Complaint</a></li>
+<li><a href="/complaint-generator.html" class="nav-link">Draft Complaint</a></li>
+        <li><a href="/dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="/about.html" class="nav-link">About</a></li>
+      </ul>
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu"><span style="font-size: 1.4rem; line-height: 1;">&#9776;</span></button>
+    </div>
+  </header>
+
+  <!-- Tracker Main -->
+  <main class="container" style="max-width: 1140px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+      <div>
+        <h1 style="font-size: 1.85rem; margin-bottom: 0.5rem;">Complaint Progress Tracker</h1>
+        <p style="color: var(--text-muted); font-size: 0.975rem;">
+          Keep tabs on your reference numbers, follow-up milestones, and statutory deadlines in one central place.
+        </p>
+      </div>
+      <button class="btn btn-primary" onclick="openNewComplaintModal()">
+        + Log New Complaint
+      </button>
+    </div>
+
+    <!-- Integrity Disclaimer Banner -->
+    <div class="alert alert-info" style="font-size: 0.85rem; margin-bottom: 1.5rem;">
+      <span>ℹ️</span>
+      <div>
+        <strong>Integrity Notice:</strong> Statuses displayed in this tracker represent your personal administrative notes and chronological timeline. They do not claim live integration with external government or bank portals. Always verify directly through the official tracking link provided.
+      </div>
+    </div>
+
+    <!-- Filters and Search Toolbar -->
+    <div class="card" style="padding: 1.25rem; margin-bottom: 1.5rem;">
+      <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0.75rem;">
+        <input type="text" id="tracker-search-input" class="form-input" placeholder="Search by organization, title, or reference number..." oninput="debounceFilter()">
+        <select id="tracker-status-filter" class="form-select" onchange="filterComplaints()">
+          <option value="">All Statuses</option>
+          <option value="Draft">Draft</option>
+          <option value="Ready to submit">Ready to submit</option>
+          <option value="Submitted">Submitted</option>
+          <option value="Acknowledgement received">Acknowledgement received</option>
+          <option value="In progress">In progress</option>
+          <option value="Additional information requested">Additional info requested</option>
+          <option value="Resolved">Resolved</option>
+          <option value="Closed">Closed</option>
+          <option value="Escalation considered">Escalation considered</option>
+        </select>
+        <button type="button" class="btn btn-outline" onclick="resetFilters()">Reset Filters</button>
+      </div>
+    </div>
+
+    <!-- Complaints List Container -->
+    <div id="complaints-container" style="display: flex; flex-direction: column; gap: 1rem;">
+      <div class="card" style="text-align: center; padding: 3rem;">
+        <p style="color: var(--text-muted);">Loading your tracked complaints...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Log New Complaint -->
+  <div id="new-complaint-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <button class="modal-close" onclick="closeNewComplaintModal()">&times;</button>
+      <h3 class="modal-title">Log a New Complaint</h3>
+      <form id="new-complaint-form" onsubmit="handleCreateComplaint(event)">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Complaint Title / Summary</label>
+          <input type="text" id="comp-title" class="form-input" required placeholder="e.g. Failed UPI Transaction Refund">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Category</label>
+            <select id="comp-category" class="form-select" required>
+              <option value="Banking and Payments">Banking and Payments</option>
+              <option value="Electricity and Water">Electricity and Water</option>
+              <option value="College and University">College and University</option>
+              <option value="Internet and Telecom">Internet and Telecom</option>
+              <option value="Consumer Complaints">Consumer Complaints</option>
+              <option value="Housing and Rental">Housing and Rental</option>
+              <option value="Workplace Problems">Workplace Problems</option>
+              <option value="Government Services">Government Services</option>
+              <option value="Transport & Public">Transport & Public</option>
+              <option value="Cyber Crime & Fraud">Cyber Crime & Fraud</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Organization</label>
+            <input type="text" id="comp-org" class="form-input" required placeholder="e.g. State Bank of India">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Complaint / Ticket Ref ID</label>
+            <input type="text" id="comp-ref" class="form-input" placeholder="e.g. SBI-2026-9912">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Status</label>
+            <select id="comp-status" class="form-select">
+              <option value="Submitted">Submitted</option>
+              <option value="Draft">Draft</option>
+              <option value="Ready to submit">Ready to submit</option>
+              <option value="Acknowledgement received">Acknowledgement received</option>
+              <option value="In progress">In progress</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Official Portal Tracking URL (Optional)</label>
+          <input type="url" id="comp-url" class="form-input" placeholder="https://cms.rbi.org.in">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Notes & Follow-up Details</label>
+          <textarea id="comp-notes" class="form-textarea" rows="3" placeholder="Enter notes from customer care or next action date..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Save to Tracker</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Update Status & Timeline -->
+  <div id="update-status-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <button class="modal-close" onclick="closeUpdateStatusModal()">&times;</button>
+      <h3 class="modal-title">Update Complaint Status</h3>
+      <form id="update-status-form" onsubmit="handleUpdateStatusSubmit(event)">
+        <input type="hidden" id="update-comp-id">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">New Status</label>
+          <select id="update-status-select" class="form-select" required>
+            <option value="Submitted">Submitted</option>
+            <option value="Acknowledgement received">Acknowledgement received</option>
+            <option value="In progress">In progress</option>
+            <option value="Additional information requested">Additional information requested</option>
+            <option value="Resolved">Resolved</option>
+            <option value="Closed">Closed</option>
+            <option value="Escalation considered">Escalation considered</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Timeline Notes / What Happened</label>
+          <textarea id="update-notes-input" class="form-textarea" rows="3" required placeholder="e.g. Received email response from Nodal Officer stating investigation will complete by Friday..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Record Update in Timeline</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+          <div class="brand-icon" style="width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
           <span style="font-size:1.3rem; font-weight:800; color:white;">FIXROUTE</span>
@@ -101,7 +262,10 @@
             <p style="color: var(--text-muted); max-width: 480px; margin: 0 auto 1.5rem; font-size: 0.95rem;">
               When you submit a grievance to a bank, Discom, college, or service provider, log it here to track its reference number, turnaround dates, and resolution steps.
             </p>
-            <button class="btn btn-primary" onclick="openNewComplaintModal()">Log First Complaint</button>
+            <div style="display:flex; justify-content:center; gap:0.75rem; flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="openNewComplaintModal()">+ Log New Complaint</button>
+              <button class="btn btn-outline" onclick="loadSampleComplaint()">✨ Load Example Record</button>
+            </div>
           </div>
         `;
         return;
@@ -323,6 +487,29 @@
       document.getElementById("tracker-search-input").value = "";
       document.getElementById("tracker-status-filter").value = "";
       renderComplaints(complaintsList);
+    }
+
+    function loadSampleComplaint() {
+      const sample = {
+        id: Date.now(),
+        title: "Failed UPI Transaction ₹4,500 Not Reversed",
+        category_name: "Banking and Payments",
+        organization_name: "State Bank of India",
+        reference_number: "UPI-RRN-998124018",
+        status: "Submitted",
+        submission_date: new Date().toISOString(),
+        official_tracking_url: "https://cms.rbi.org.in/",
+        notes: "Transaction failed at POS terminal. Bank SMS stated ₹4,500 debited.",
+        timeline: [
+          { status: "Submitted", notes: "Lodged formal ticket via SBI YONO app (SR-9812301).", event_date: new Date().toISOString() },
+          { status: "Draft", notes: "Prepared initial dispute evidence with bank statement.", event_date: new Date(Date.now() - 86400000).toISOString() }
+        ]
+      };
+      const local = JSON.parse(localStorage.getItem("fixroute_guest_complaints") || "[]");
+      local.unshift(sample);
+      localStorage.setItem("fixroute_guest_complaints", JSON.stringify(local));
+      showToast("Sample complaint added to tracker!", "success");
+      loadComplaints();
     }
   </script>
 </body>

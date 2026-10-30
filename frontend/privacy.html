@@ -17,7 +17,62 @@
   <header class="site-header">
     <div class="header-container">
       <a href="/index.html" class="brand-logo">
-        <div class="brand-icon" style="width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">
+        <div class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <span>FIXROUTE</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="/index.html" class="nav-link">Home</a></li>
+        <li><a href="/search.html" class="nav-link">Find a Solution</a></li>
+        <li><a href="/tracker.html" class="nav-link">Track Complaint</a></li>
+        <li><a href="/dashboard.html" class="nav-link">Dashboard</a></li>
+      </ul>
+      <div class="nav-auth" id="nav-auth-container"></div>
+      <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu"><span style="font-size: 1.4rem; line-height: 1;">&#9776;</span></button>
+    </div>
+  </header>
+
+  <main class="container-narrow">
+    <div style="margin-bottom: 2rem;">
+      <h1 style="font-size: 2.25rem; color: var(--primary-navy); margin-bottom: 0.5rem;">Privacy Policy</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Last Updated: October 2026 &bull; Compliant with Indian DPDP Act Principles</p>
+    </div>
+
+    <div class="card" style="padding: 2.25rem; line-height: 1.8; color: #334155; font-size: 0.95rem;">
+      <h3 style="color: var(--primary-navy); margin-bottom: 0.5rem;">1. Data Minimization Commitment</h3>
+      <p style="margin-bottom: 1.5rem;">
+        FixRoute collects only the minimum personal data required to deliver dispute-routing guidance and optional account synchronization. We never request sensitive financial authenticators, including banking PINs, Aadhaar OTPs, net-banking passwords, or payment card CVVs.
+      </p>
+
+      <h3 style="color: var(--primary-navy); margin-bottom: 0.5rem;">2. Information We Process</h3>
+      <p style="margin-bottom: 1rem;"><strong>Account Information:</strong> If you register, we store your name, email address, and a cryptographically salted bcrypt hash of your password. We never store plaintext passwords.</p>
+      <p style="margin-bottom: 1rem;"><strong>Search Queries & Routing:</strong> Problem descriptions typed into the search bar are analyzed to match regulatory authorities. Search history may be saved to your private dashboard and can be wiped with one click.</p>
+      <p style="margin-bottom: 1.5rem;"><strong>Complaint Drafts & Tracker:</strong> Complaint records, ticket numbers, and drafts generated through FixRoute are stored securely in your private account and are inaccessible to other users or search engines.</p>
+
+      <h3 style="color: var(--primary-navy); margin-bottom: 0.5rem;">3. No Third-Party Data Selling</h3>
+      <p style="margin-bottom: 1.5rem;">
+        FixRoute does not sell, rent, or monetize personal user data to advertising brokers, credit bureaus, or collection agencies.
+      </p>
+
+      <h3 style="color: var(--primary-navy); margin-bottom: 0.5rem;">4. Your Right to Erasure</h3>
+      <p style="margin-bottom: 1.5rem;">
+        Under Indian data protection principles, you possess the right to permanently delete your FixRoute account. Initiating account deletion through your dashboard purges all personal records, tracked complaints, and complaint drafts immediately.
+      </p>
+
+      <h3 style="color: var(--primary-navy); margin-bottom: 0.5rem;">5. Contact Privacy Officer</h3>
+      <p>
+        For inquiries regarding data privacy or to exercise your rights, email <a href="mailto:privacy@fixroute.in">privacy@fixroute.in</a>.
+      </p>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+          <div class="brand-icon" style="width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
           <span style="font-size:1.3rem; font-weight:800; color:white;">FIXROUTE</span>
